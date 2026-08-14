@@ -11,7 +11,16 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    remotePatterns: imageHosts,
+    // Menggabungkan host lama dari file config + domain ImageKit.io
+    remotePatterns: [
+      ...imageHosts,
+      {
+        protocol: 'https',
+        hostname: 'ik.imagekit.io',
+        port: '',
+        pathname: '/**',
+      },
+    ],
     minimumCacheTTL: 60,
     qualities: [75, 85, 100],
   },
@@ -42,4 +51,5 @@ const nextConfig = {
     return config;
   },
 };
+
 export default nextConfig;
