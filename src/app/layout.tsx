@@ -28,6 +28,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
   title: 'Fandy Aziz — Educator, Builder & Digital Explorer',
   description: 'Personal portfolio of Fandy Aziz showcasing education, web development, digital transformation, and vocational innovation from East Java, Indonesia.',
+  verification: {
+    google: 'google-site-verification=aFwjWKDVbOw1HtrmLP21uCMO1UIXLR0A2UJYqPqSMYw'
+  },
   icons: {
     icon: [{ url: '/favicon.ico', type: 'image/x-icon' }],
   },
