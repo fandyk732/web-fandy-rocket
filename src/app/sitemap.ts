@@ -1,10 +1,27 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  // Hardcode domain utama sebagai fallback aman jika env variable kosong
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.fandyalmana.my.id';
+
   return [
-    { url: base, lastModified: new Date(), priority: 1.0 },
-    { url: `${base}/projects`, lastModified: new Date(), priority: 0.8 },
-    { url: `${base}/about`, lastModified: new Date(), priority: 0.8 },
+    {
+      url: baseUrl,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 1.0,
+    },
+    {
+      url: `${baseUrl}/projects`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/about`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
   ];
 }
