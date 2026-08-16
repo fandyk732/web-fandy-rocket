@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import AppLogo from '@/components/ui/AppLogo';
 
-
 const navLinks = [
   { label: 'Home', href: '/' },
   { label: 'Projects', href: '/projects' },
@@ -38,7 +37,7 @@ export default function Navbar() {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled || mobileOpen
-            ? 'nav-blur bg-background/80 border-b border-border shadow-sm'
+            ? 'bg-background/70 backdrop-blur-md border-b border-border/50 shadow-sm'
             : 'bg-transparent'
         }`}
       >
@@ -75,7 +74,6 @@ export default function Navbar() {
 
             {/* CTA */}
             <div className="hidden md:flex items-center gap-3">
-              
               <Link
                 href="/about#contact"
                 className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-primary-foreground bg-primary rounded-lg hover:bg-accent transition-all duration-200 hover:scale-105"
@@ -113,7 +111,7 @@ export default function Navbar() {
 
       {/* 📱 MOBILE MENU OVERLAY (Full Screen & Seamless) */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 md:hidden flex flex-col justify-center items-center bg-background/95 nav-blur backdrop-blur-xl transition-all duration-300">
+        <div className="fixed inset-0 z-40 md:hidden flex flex-col justify-center items-center bg-background/90 backdrop-blur-xl transition-all duration-300">
           <nav className="flex flex-col items-center justify-center gap-8 px-6 text-center">
             {navLinks.map((link, i) => (
               <Link
