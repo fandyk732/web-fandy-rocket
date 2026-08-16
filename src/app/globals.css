@@ -3,42 +3,45 @@
 @tailwind utilities;
 
 @layer base {
-  /* ☀️ LIGHT MODE (Background Putih, Teks Hitam) */
   :root {
-    --background: 255 255 255;
-    --foreground: 15 23 42;
-    --card: 248 250 252;
-    --card-foreground: 15 23 42;
-    --muted-foreground: 100 116 139;
-    --border: 226 232 240;
-  }
+    /* Background & Foreground (Hitam Pekat) */
+    --background: #0a0a0c;
+    --foreground: #f8fafc;
 
-  /* 🌙 DARK MODE (Background Hitam, Teks Putih) */
-  .dark {
-    --background: 10 10 12;
-    --foreground: 248 250 252;
-    --card: 20 20 25;
-    --card-foreground: 248 250 252;
-    --muted-foreground: 148 163 184;
-    --border: 38 38 45;
+    /* Card & Surfaces */
+    --card: #141419;
+    --card-foreground: #f8fafc;
+
+    /* Borders & Muted Text */
+    --border: #26262d;
+    --muted: #1c1c22;
+    --muted-foreground: #94a3b8;
+
+    /* 🎨 WARNA AKSEN PRIMARY (Emas / Warm Amber Elegan - #d97706) */
+    --primary: #d97706;
+    --primary-foreground: #ffffff;
+
+    /* Secondary & Accent */
+    --secondary: #1e1e24;
+    --secondary-foreground: #f8fafc;
+    --accent: #f59e0b;
+    --accent-foreground: #000000;
+
+    --input: #26262d;
+    --ring: #d97706;
+    --radius: 16px;
   }
 
   body {
-    background-color: rgb(var(--background)) !important;
-    color: rgb(var(--foreground)) !important;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans), sans-serif;
   }
+}
 
-  /* src/app/globals.css */
-
-  /* Paksa background & text ikut tema */
-  body, main, section {
-    background-color: hsl(var(--background)) !important;
-    color: hsl(var(--foreground)) !important;
-  }
-
-  /* Biar card / box juga ikut berubah di light mode */
-  .bg-card {
-    background-color: hsl(var(--card)) !important;
-    color: hsl(var(--card-foreground)) !important;
-  }
+/* Background Grid Lines */
+.grid-bg {
+  background-size: 30px 30px;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
 }
