@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ☀️ LIGHT MODE (Background Putih, Teks Hitam) */
+  :root {
+    --background: 255 255 255;
+    --foreground: 15 23 42;
+    --card: 248 250 252;
+    --card-foreground: 15 23 42;
+    --muted-foreground: 100 116 139;
+    --border: 226 232 240;
+  }
+
+  /* 🌙 DARK MODE (Background Hitam, Teks Putih) */
+  .dark {
+    --background: 10 10 12;
+    --foreground: 248 250 252;
+    --card: 20 20 25;
+    --card-foreground: 248 250 252;
+    --muted-foreground: 148 163 184;
+    --border: 38 38 45;
+  }
+
+  body {
+    background-color: rgb(var(--background)) !important;
+    color: rgb(var(--foreground)) !important;
+  }
+
+  /* src/app/globals.css */
+
+  /* Paksa background & text ikut tema */
+  body, main, section {
+    background-color: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* Biar card / box juga ikut berubah di light mode */
+  .bg-card {
+    background-color: hsl(var(--card)) !important;
+    color: hsl(var(--card-foreground)) !important;
+  }
+}

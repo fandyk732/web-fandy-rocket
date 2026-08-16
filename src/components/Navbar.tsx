@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import AppLogo from '@/components/ui/AppLogo';
 
+
 const navLinks = [
   { label: 'Home', href: '/' },
   { label: 'Projects', href: '/projects' },
@@ -74,6 +75,7 @@ export default function Navbar() {
 
             {/* CTA */}
             <div className="hidden md:flex items-center gap-3">
+              
               <Link
                 href="/about#contact"
                 className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-primary-foreground bg-primary rounded-lg hover:bg-accent transition-all duration-200 hover:scale-105"

@@ -4,6 +4,8 @@ import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import '../styles/tailwind.css';
 import BackToTop from '@/components/BackToTop';
 import Navbar from '@/components/Navbar';
+import { ThemeProvider } from '@/components/ThemeProvider';
+import './globals.css';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -48,16 +50,23 @@ export const metadata: Metadata = {
   },
 };
 
+// src/app/layout.tsx
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${plusJakartaSans.variable} ${jetbrainsMono.variable} dark`}>
-      <body className={plusJakartaSans.className}>
-        {children}
-        <BackToTop />
-
-        </body>
+    <html
+      lang="en"
+      className={`${plusJakartaSans.variable} ${jetbrainsMono.variable}`}
+      suppressHydrationWarning
+    >
+      <body>
+        <ThemeProvider>
+          {children}
+          <BackToTop />
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
