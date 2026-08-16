@@ -31,33 +31,43 @@ export default function ProjectsPreviewSection() {
           </div>
         </ScrollReveal>
 
-        {/* 
-          BENTO AUDIT:
-          Array: [SMK Digital Ecosystem, Student Log Book, Tracer Study, Digital Learning]
-          Row 1: [col-1-2: SMK Digital cs-2] [col-3: Student Log Book cs-1]
-          Row 2: [col-1: Tracer Study cs-1] [col-2-3: Digital Learning cs-2]
-          Placed 4/4 ✓
-        */}
+        {/* Bento Grid layout with dynamic links */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Large card */}
-          <ScrollReveal delay={100} className="md:col-span-2">
-            <ProjectCard project={featured?.[0]} size="large" />
-          </ScrollReveal>
+          {/* Large card 1 */}
+          {featured?.[0] && (
+            <ScrollReveal delay={100} className="md:col-span-2">
+              <Link href={`/projects/${featured[0].slug}`} className="block h-full group">
+                <ProjectCard project={featured[0]} size="large" />
+              </Link>
+            </ScrollReveal>
+          )}
 
-          {/* Normal card */}
-          <ScrollReveal delay={180} className="md:col-span-1">
-            <ProjectCard project={featured?.[1]} />
-          </ScrollReveal>
+          {/* Normal card 1 */}
+          {featured?.[1] && (
+            <ScrollReveal delay={180} className="md:col-span-1">
+              <Link href={`/projects/${featured[1].slug}`} className="block h-full group">
+                <ProjectCard project={featured[1]} />
+              </Link>
+            </ScrollReveal>
+          )}
 
-          {/* Normal card */}
-          <ScrollReveal delay={220} className="md:col-span-1">
-            <ProjectCard project={featured?.[2]} />
-          </ScrollReveal>
+          {/* Normal card 2 */}
+          {featured?.[2] && (
+            <ScrollReveal delay={220} className="md:col-span-1">
+              <Link href={`/projects/${featured[2].slug}`} className="block h-full group">
+                <ProjectCard project={featured[2]} />
+              </Link>
+            </ScrollReveal>
+          )}
 
-          {/* Large card */}
-          <ScrollReveal delay={280} className="md:col-span-2">
-            <ProjectCard project={projects?.[3]} size="large" />
-          </ScrollReveal>
+          {/* Large card 2 */}
+          {projects?.[3] && (
+            <ScrollReveal delay={280} className="md:col-span-2">
+              <Link href={`/projects/${projects[3].slug}`} className="block h-full group">
+                <ProjectCard project={projects[3]} size="large" />
+              </Link>
+            </ScrollReveal>
+          )}
         </div>
       </div>
     </section>

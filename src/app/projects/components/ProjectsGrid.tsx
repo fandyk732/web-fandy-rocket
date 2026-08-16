@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import ScrollReveal from '@/components/ScrollReveal';
 import { projects } from '@/data/projects';
 
@@ -77,7 +78,8 @@ export default function ProjectsGrid() {
 
                     {/* CTA */}
                     <div className="mt-auto pt-4 border-t border-border flex items-center justify-between">
-                      <button
+                      <Link
+                        href={`/projects/${project?.slug}`}
                         className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors group/btn"
                         aria-label={`View details for ${project?.title}`}
                       >
@@ -92,7 +94,7 @@ export default function ProjectsGrid() {
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                         </svg>
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </div>

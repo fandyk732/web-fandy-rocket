@@ -28,7 +28,7 @@ export default function Footer() {
             About
           </Link>
           <a
-            href="mailto:fandyazis17@gmail.com"
+            href="/about#contact"
             className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
           >
             Contact

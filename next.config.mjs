@@ -7,11 +7,9 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // 💡 Taruh turbopack: {} di root level, BUKAN di dalam experimental
+  turbopack: {},
   images: {
-    // Menggabungkan host lama dari file config + domain ImageKit.io
     remotePatterns: [
       ...imageHosts,
       {
@@ -24,19 +22,16 @@ const nextConfig = {
     minimumCacheTTL: 60,
     qualities: [75, 85, 100],
   },
-  webpack(
-    config,
-    {
-      dev: dev
-    }
-  ) {
+  webpack(config, { dev }) {
     if (dev) {
       config.module.rules.push({
         test: /\.(jsx|tsx)$/,
         exclude: [/node_modules/],
-        use: [{
-          loader: '@dhiwise/component-tagger/nextLoader',
-        }],
+        use: [
+          {
+            loader: '@dhiwise/component-tagger/nextLoader',
+          },
+        ],
       });
       const ignoredPaths = (process.env.WATCH_IGNORED_PATHS || '')
         .split(',')

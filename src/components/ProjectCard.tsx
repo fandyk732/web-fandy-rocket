@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+// Tag 'Link' tidak lagi diperlukan di file ini karena sudah dibungkus di parent component
 import type { Project } from '@/data/projects';
 
 interface ProjectCardProps {
@@ -67,16 +67,14 @@ export default function ProjectCard({ project, size = 'normal' }: ProjectCardPro
           ))}
         </div>
 
-        {/* CTA */}
+        {/* CTA (Diuat jadi div biasa biar gak bentrok sama Link pembungkusnya) */}
         <div className="mt-4 pt-4 border-t border-border">
-          <Link
-            href={`/projects#${project.id}`}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors group/link"
-            aria-label={`View project: ${project.title}`}
+          <div
+            className="inline-flex items-center gap-2 text-sm font-semibold text-primary group-hover:text-accent transition-colors"
           >
             View Project
             <svg
-              className="w-4 h-4 transition-transform duration-200 group-hover/link:translate-x-1"
+              className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1"
               fill="none"
               stroke="currentColor"
               strokeWidth={2}
@@ -85,7 +83,7 @@ export default function ProjectCard({ project, size = 'normal' }: ProjectCardPro
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
-          </Link>
+          </div>
         </div>
       </div>
     </article>
