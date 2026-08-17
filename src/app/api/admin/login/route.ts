@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createSessionToken } from '@/lib/adminAuth';
 
 export async function POST(request: Request) {
   const { password } = await request.json();
@@ -6,8 +7,10 @@ export async function POST(request: Request) {
   if (password === process.env.ADMIN_PASSWORD) {
     const response = NextResponse.json({ success: true });
 
-    // Set Cookie Session
-    response.cookies.set('admin_session', 'authenticated', {
+    // 🔒 Token yang di-sign (HMAC), bukan string statis 'authenticated'.
+    // Nggak bisa dipalsuin cuma dengan nambahin cookie manual lewat DevTools —
+    // harus tau ADMIN_PASSWORD buat ngasilin signature yang valid.
+    response.cookies.set('admin_session', createSessionToken(), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',

@@ -52,25 +52,26 @@ export default async function ArticleDetailPage({ params }: Props) {
         </div>
       </ScrollReveal>
 
-      {/* Cover Image */}
+      {/* Cover Image dengan Blur Background */}
       {article.cover_image && (
         <ScrollReveal delay={200}>
-          <div className="rounded-2xl overflow-hidden mb-8 aspect-video">
-            <img src={article.cover_image} alt={article.title} className="w-full h-full object-cover" />
-          </div>
-        </ScrollReveal>
-      )}
-
-      {/* YouTube Embed */}
-      {article.youtube_id && (
-        <ScrollReveal delay={250}>
-          <div className="aspect-video w-full rounded-2xl overflow-hidden mb-8 border border-border">
-            <iframe
-              src={`https://www.youtube.com/embed/${article.youtube_id}`}
-              title="YouTube video player"
-              className="w-full h-full"
-              allowFullScreen
+          <div className="relative w-full aspect-video rounded-2xl overflow-hidden mb-8 border border-border/50 bg-black/40">
+            
+            {/* 1. Background Blur Layer */}
+            <img
+              src={article.cover_image}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-50 scale-110 pointer-events-none"
             />
+
+            {/* 2. Foreground Image (Gambar Asli Sesuai Proporsi) */}
+            <img
+              src={article.cover_image}
+              alt={article.title}
+              className="relative z-10 w-full h-full object-contain mx-auto"
+            />
+            
           </div>
         </ScrollReveal>
       )}
@@ -81,6 +82,21 @@ export default async function ArticleDetailPage({ params }: Props) {
           <ReactMarkdown>{article.content}</ReactMarkdown>
         </div>
       </ScrollReveal>
+
+       {/* YouTube Embed */}
+        {article.youtube_id && (
+          <ScrollReveal delay={250}>
+            {/* Tambahkan `my-8` atau `mt-8 mb-8` di div pembungkus ini */}
+            <div className="aspect-video w-full rounded-2xl overflow-hidden my-8 border border-border shadow-lg">
+              <iframe
+                src={`https://www.youtube.com/embed/${article.youtube_id}`}
+                title="YouTube video player"
+                className="w-full h-full"
+                allowFullScreen
+              />
+            </div>
+          </ScrollReveal>
+        )}
     </article>
   );
 }

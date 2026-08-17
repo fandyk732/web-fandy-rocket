@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { isAdminRequest } from '@/lib/adminAuth';
 
 export async function POST(request: Request) {
+  // 🔒 Ini yang sebelumnya HILANG TOTAL — siapapun bisa nulis artikel tanpa login.
+  if (!isAdminRequest(request)) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const body = await request.json();
     const {
@@ -18,7 +24,6 @@ export async function POST(request: Request) {
       date,
     } = body;
 
-    // Insert ke database Supabase
     const { data, error } = await supabase.from('articles').insert([
       {
         title,
@@ -45,7 +50,14 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  // 🔒 Endpoint ini cuma dipakai dashboard admin (halaman publik artikel
+  // baca langsung dari Supabase, bukan lewat sini) — dikunci sekalian biar
+  // nggak ada celah baca draft/data lain lewat endpoint yang harusnya internal.
+  if (!isAdminRequest(request)) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const { data, error } = await supabase
       .from('articles')
@@ -64,6 +76,10 @@ export async function GET() {
 
 // DELETE: Hapus artikel berdasarkan ID
 export async function DELETE(request: Request) {
+  if (!isAdminRequest(request)) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
@@ -86,6 +102,10 @@ export async function DELETE(request: Request) {
 
 // PUT: Update artikel yang sudah ada
 export async function PUT(request: Request) {
+  if (!isAdminRequest(request)) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const body = await request.json();
     const { id, ...updateData } = body;

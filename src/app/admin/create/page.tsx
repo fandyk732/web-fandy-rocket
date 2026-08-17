@@ -1,6 +1,7 @@
 'use client';
 
 import LogoutButton from '@/components/LogoutButton';
+import Link from 'next/link';
 import { useState } from 'react';
 
 export default function CreateArticlePage() {
@@ -53,6 +54,11 @@ export default function CreateArticlePage() {
 
   return (
     <main className="min-h-screen bg-background text-foreground py-16 px-6 max-w-3xl mx-auto">
+     
+     <Link href="/admin" className="text-sm text-muted-foreground hover:text-primary mb-8 inline-block transition-colors">
+          ← Kembali ke dashboard Admin
+        </Link>
+
       <div className="flex items-center justify-between mb-8 border-b border-border pb-6">
         <h1 className="text-3xl font-bold">Tambah Artikel Baru</h1>
         <LogoutButton/>
