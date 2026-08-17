@@ -4,6 +4,7 @@ import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import '../styles/tailwind.css';
 import BackToTop from '@/components/BackToTop';
 import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer'; // <-- Import Footer (sesuaikan path jika berbeda)
 import { ThemeProvider } from '@/components/ThemeProvider';
 import './globals.css';
 
@@ -50,8 +51,6 @@ export const metadata: Metadata = {
   },
 };
 
-// src/app/layout.tsx
-
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -63,7 +62,13 @@ export default function RootLayout({
     >
       <body>
         <ThemeProvider>
-          {children}
+          <div className="flex flex-col min-h-screen">
+            <Navbar />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
+          </div>
           <BackToTop />
         </ThemeProvider>
       </body>

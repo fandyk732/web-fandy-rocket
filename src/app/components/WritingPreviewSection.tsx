@@ -1,11 +1,39 @@
 import React from 'react';
-
 import SectionTitle from '@/components/SectionTitle';
 import ArticleCard from '@/components/ArticleCard';
 import ScrollReveal from '@/components/ScrollReveal';
-import { articles } from '@/data/articles';
+import { supabase } from '@/lib/supabase';
 
-export default function WritingPreviewSection() {
+async function getLatestArticles() {
+  const { data, error } = await supabase
+    .from('articles')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(3);
+
+  if (error) {
+    console.error('Error fetching latest articles:', error);
+    return [];
+  }
+
+  return data.map((art) => ({
+    id: art.id,
+    title: art.title,
+    slug: art.slug,
+    excerpt: art.excerpt,
+    category: art.category,
+    readingTime: art.reading_time,
+    date: art.date,
+    coverImage: art.cover_image,
+    youtubeId: art.youtube_id,
+    content: art.content,
+    gradient: art.gradient || 'from-blue-500/20 to-purple-500/20', // <-- TAMBAHKAN INI (Nilai Default Gradient)
+  }));
+}
+
+export default async function WritingPreviewSection() {
+  const articles = await getLatestArticles();
+
   return (
     <section className="py-20 lg:py-24 px-6 lg:px-8 border-t border-border" aria-labelledby="writing-title">
       <div className="max-w-7xl mx-auto">
