@@ -61,3 +61,61 @@ export async function GET() {
     return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
   }
 }
+
+// DELETE: Hapus artikel berdasarkan ID
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ success: false, error: 'ID artikel dibutuhkan' }, { status: 400 });
+    }
+
+    const { error } = await supabase.from('articles').delete().eq('id', id);
+
+    if (error) {
+      return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+    }
+
+    return NextResponse.json({ success: true, message: 'Artikel berhasil dihapus' });
+  } catch (err) {
+    return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
+  }
+}
+
+// PUT: Update artikel yang sudah ada
+export async function PUT(request: Request) {
+  try {
+    const body = await request.json();
+    const { id, ...updateData } = body;
+
+    if (!id) {
+      return NextResponse.json({ success: false, error: 'ID artikel dibutuhkan' }, { status: 400 });
+    }
+
+    const { data, error } = await supabase
+      .from('articles')
+      .update({
+        title: updateData.title,
+        slug: updateData.slug,
+        excerpt: updateData.excerpt,
+        category: updateData.category,
+        reading_time: updateData.readingTime,
+        cover_image: updateData.coverImage,
+        youtube_id: updateData.youtubeId,
+        meta_title: updateData.metaTitle,
+        meta_description: updateData.metaDescription,
+        content: updateData.content,
+      })
+      .eq('id', id);
+
+    if (error) {
+      return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+    }
+
+    return NextResponse.json({ success: true, data });
+  } catch (err) {
+    return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
+  }
+}
