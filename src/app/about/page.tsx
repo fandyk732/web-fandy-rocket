@@ -18,7 +18,7 @@ export default function AboutPage() {
         <AboutToolbox />
         <AboutContact />
       </main>
-      <Footer />
+     
     </div>
   );
 }

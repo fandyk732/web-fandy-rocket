@@ -12,7 +12,7 @@ export default function ProjectsPage() {
         <ProjectsHero />
         <ProjectsGrid />
       </main>
-      <Footer />
+     
     </div>
   );
 }

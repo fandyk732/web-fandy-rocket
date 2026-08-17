@@ -20,7 +20,7 @@ export default function HomePage() {
         <CurrentlyBuildingSection />
         <WritingPreviewSection />
       </main>
-      <Footer />
+     
     </div>
   );
 }
