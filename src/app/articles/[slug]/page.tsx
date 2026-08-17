@@ -22,58 +22,36 @@ async function getArticleBySlug(slug: string) {
   return data;
 }
 
-// 1. DYNAMIC METADATA (Untuk Preview WhatsApp, Open Graph & Twitter Card)
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const article = await getArticleBySlug(slug);
 
-  if (!article) {
-    return {
-      title: 'Artikel Tidak Ditemukan — Fandy Aziz',
-    };
-  }
+  if (!article) return { title: 'Artikel Tidak Ditemukan — Fandy Aziz' };
 
   const title = article.meta_title || article.title;
-  const description =
-    article.meta_description ||
-    article.excerpt ||
-    'Baca artikel lengkap di Fandy Aziz Blog.';
-    
-  // Gambar cover artikel ( fallback ke logo default jika kosong )
-  const imageUrl =
-    article.cover_image ||
-    'https://www.fandyalmana.my.id/assets/images/app_logo.png';
-
-  const shareUrl = `https://www.fandyalmana.my.id/articles/${slug}`;
+  const description = article.meta_description || article.excerpt || 'Baca artikel lengkap di Fandy Aziz Blog.';
+  const imageUrl = article.cover_image || 'https://www.fandyalmana.my.id/assets/images/app_logo.png';
 
   return {
     title: `${title} — Fandy Aziz`,
-    description: description,
+    description,
     openGraph: {
-      title: title,
-      description: description,
-      url: shareUrl,
+      title,
+      description,
+      url: `https://www.fandyalmana.my.id/articles/${slug}`,
       siteName: 'Fandy Aziz',
       type: 'article',
-      images: [
-        {
-          url: imageUrl,
-          width: 1200,
-          height: 630,
-          alt: title,
-        },
-      ],
+      images: [{ url: imageUrl, width: 1200, height: 630, alt: title }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: title,
-      description: description,
+      title,
+      description,
       images: [imageUrl],
     },
   };
 }
 
-// 2. HALAMAN DETAIL ARTIKEL
 export default async function ArticleDetailPage({ params }: Props) {
   const { slug } = await params;
   const article = await getArticleBySlug(slug);
@@ -81,19 +59,18 @@ export default async function ArticleDetailPage({ params }: Props) {
   if (!article) notFound();
 
   return (
-    <article className="min-h-screen bg-background text-foreground py-24 px-6 max-w-3xl mx-auto">
-      {/* Tombol Back */}
-      <ScrollReveal delay={0}>
+    // Cukup 1 ScrollReveal pembungkus utama untuk seluruh konten
+    <ScrollReveal>
+      <article className="min-h-screen bg-background text-foreground py-24 px-6 max-w-3xl mx-auto">
+        {/* Tombol Back */}
         <Link
           href="/articles"
           className="text-sm text-muted-foreground hover:text-primary mb-8 inline-block transition-colors"
         >
           ← Kembali ke Semua Artikel
         </Link>
-      </ScrollReveal>
 
-      {/* Header Judul */}
-      <ScrollReveal delay={100}>
+        {/* Header Judul */}
         <div className="space-y-4 mb-8">
           <div className="flex items-center gap-3 text-sm text-muted-foreground">
             <span className="px-3 py-1 bg-primary/10 text-primary font-medium rounded-full text-xs">
@@ -108,40 +85,31 @@ export default async function ArticleDetailPage({ params }: Props) {
             {article.title}
           </h1>
         </div>
-      </ScrollReveal>
 
-      {/* Cover Image dengan Blur Background */}
-      {article.cover_image && (
-        <ScrollReveal delay={200}>
-          <div className="relative w-full aspect-video rounded-2xl overflow-hidden mb-8 border border-border/50 bg-black/40">
-            {/* 1. Background Blur Layer */}
+        {/* Cover Image (Blur dioptimasi jadi blur-md / opacity lebih ringan) */}
+        {article.cover_image && (
+          <div className="relative w-full aspect-video rounded-2xl overflow-hidden mb-8 border border-border/50 bg-black/40 transform-gpu">
             <img
               src={article.cover_image}
               alt=""
               aria-hidden="true"
-              className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-50 scale-110 pointer-events-none"
+              className="absolute inset-0 w-full h-full object-cover blur-md opacity-40 scale-105 pointer-events-none"
             />
-
-            {/* 2. Foreground Image (Gambar Asli Sesuai Proporsi) */}
             <img
               src={article.cover_image}
               alt={article.title}
               className="relative z-10 w-full h-full object-contain mx-auto"
             />
           </div>
-        </ScrollReveal>
-      )}
+        )}
 
-      {/* Body Content */}
-      <ScrollReveal delay={300}>
+        {/* Body Content */}
         <div className="prose prose-invert max-w-none leading-relaxed text-foreground/90 space-y-4">
           <ReactMarkdown>{article.content}</ReactMarkdown>
         </div>
-      </ScrollReveal>
 
-      {/* YouTube Embed */}
-      {article.youtube_id && (
-        <ScrollReveal delay={250}>
+        {/* YouTube Embed */}
+        {article.youtube_id && (
           <div className="aspect-video w-full rounded-2xl overflow-hidden my-8 border border-border shadow-lg">
             <iframe
               src={`https://www.youtube.com/embed/${article.youtube_id}`}
@@ -150,8 +118,8 @@ export default async function ArticleDetailPage({ params }: Props) {
               allowFullScreen
             />
           </div>
-        </ScrollReveal>
-      )}
-    </article>
+        )}
+      </article>
+    </ScrollReveal>
   );
 }
