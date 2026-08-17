@@ -5,7 +5,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { password } = body;
 
-    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'fandy123';
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD
 
     if (password === ADMIN_PASSWORD) {
       const response = NextResponse.json({ success: true, message: 'Login Berhasil' });

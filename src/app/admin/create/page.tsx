@@ -1,5 +1,6 @@
 'use client';
 
+import LogoutButton from '@/components/LogoutButton';
 import { useState } from 'react';
 
 export default function CreateArticlePage() {
@@ -54,9 +55,9 @@ export default function CreateArticlePage() {
     <main className="min-h-screen bg-background text-foreground py-16 px-6 max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-8 border-b border-border pb-6">
         <h1 className="text-3xl font-bold">Tambah Artikel Baru</h1>
+        <LogoutButton/>
         <span className="mono-label text-xs bg-primary/10 text-primary border border-primary/20 px-3 py-1 rounded-full">Admin Mode</span>
       </div>
-
       {message && <p className="mb-6 p-4 rounded-xl border border-border bg-card text-sm font-medium">{message}</p>}
 
       <form onSubmit={handleSubmit} className="space-y-6">
