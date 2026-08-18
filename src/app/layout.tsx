@@ -7,6 +7,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer'; // <-- Import Footer (sesuaikan path jika berbeda)
 import { ThemeProvider } from '@/components/ThemeProvider';
 import './globals.css';
+import CommandPalette from '@/components/CommandPalette';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -70,6 +71,7 @@ export default function RootLayout({
             <Footer />
           </div>
           <BackToTop />
+          <CommandPalette />
         </ThemeProvider>
       </body>
     </html>

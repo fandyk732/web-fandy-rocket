@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 
 export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
@@ -25,6 +26,12 @@ export default function AdminLoginPage() {
     const data = await res.json();
     setError(data.message || 'Gagal login');
   }
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: process.env.NEXT_PUBLIC_ADMIN_SUPABASE_EMAIL!,
+    password: process.env.NEXT_PUBLIC_ADMIN_SUPABASE_PASSWORD!,
+  });
+
 };
 
   return (
