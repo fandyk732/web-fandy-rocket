@@ -1,9 +1,15 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 import { isAdminRequest } from '@/lib/adminAuth';
 
+// 🛡️ Buat instance Supabase Admin Server-Side khusus untuk Bypass RLS di API Route
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
 export async function POST(request: Request) {
-  // 🔒 Ini yang sebelumnya HILANG TOTAL — siapapun bisa nulis artikel tanpa login.
+  // 🔒 Cek Autentikasi Admin
   if (!isAdminRequest(request)) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }
@@ -24,7 +30,8 @@ export async function POST(request: Request) {
       date,
     } = body;
 
-    const { data, error } = await supabase.from('articles').insert([
+    // 🚀 Menggunakan supabaseAdmin (Service Role) agar tidak ditolak oleh RLS
+    const { data, error } = await supabaseAdmin.from('articles').insert([
       {
         title,
         slug,
@@ -51,15 +58,12 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
-  // 🔒 Endpoint ini cuma dipakai dashboard admin (halaman publik artikel
-  // baca langsung dari Supabase, bukan lewat sini) — dikunci sekalian biar
-  // nggak ada celah baca draft/data lain lewat endpoint yang harusnya internal.
   if (!isAdminRequest(request)) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('articles')
       .select('*')
       .order('created_at', { ascending: false });
@@ -88,7 +92,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ success: false, error: 'ID artikel dibutuhkan' }, { status: 400 });
     }
 
-    const { error } = await supabase.from('articles').delete().eq('id', id);
+    const { error } = await supabaseAdmin.from('articles').delete().eq('id', id);
 
     if (error) {
       return NextResponse.json({ success: false, error: error.message }, { status: 400 });
@@ -114,7 +118,7 @@ export async function PUT(request: Request) {
       return NextResponse.json({ success: false, error: 'ID artikel dibutuhkan' }, { status: 400 });
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('articles')
       .update({
         title: updateData.title,
