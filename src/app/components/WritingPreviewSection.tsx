@@ -4,6 +4,8 @@ import ArticleCard from '@/components/ArticleCard';
 import ScrollReveal from '@/components/ScrollReveal';
 import { supabase } from '@/lib/supabase';
 
+export const revalidate = 0;
+
 async function getLatestArticles() {
   const { data, error } = await supabase
     .from('articles')
