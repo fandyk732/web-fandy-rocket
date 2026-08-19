@@ -101,7 +101,7 @@ export default function GuestbookPage() {
           disabled={loading}
           className="w-full py-3 bg-primary text-primary-foreground font-semibold rounded-xl text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
         >
-          {loading ? 'Mengirim...' : 'Kirim Pesan 🚀'}
+          {loading ? 'Mengirim...' : 'Kirim Pesan'}
         </button>
       </form>
 
