@@ -1,38 +1,37 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
 
 export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setError('');
+    e.preventDefault();
+    setError('');
 
-  const res = await fetch('/api/admin/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ password }),
-  });
+    const res = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    });
 
-  if (res.ok) {
-    // 💡 Pakai ini supaya browser langsung reload & middleware langsung deteksi cookie-nya
-    window.location.href = '/admin/create';
-  } else {
-    const data = await res.json();
-    setError(data.message || 'Gagal login');
-  }
+    if (res.ok) {
+      // Pakai ini supaya browser langsung reload & middleware langsung deteksi cookie-nya
+      window.location.href = '/admin/create';
+    } else {
+      const data = await res.json();
+      setError(data.message || 'Gagal login');
+    }
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: process.env.NEXT_PUBLIC_ADMIN_SUPABASE_EMAIL!,
-    password: process.env.NEXT_PUBLIC_ADMIN_SUPABASE_PASSWORD!,
-  });
-
-};
+    // 🔒 Dihapus: kode lama di sini manggil supabase.auth.signInWithPassword()
+    // pakai kredensial yang disimpen di env var NEXT_PUBLIC_ADMIN_SUPABASE_EMAIL
+    // / NEXT_PUBLIC_ADMIN_SUPABASE_PASSWORD. Prefix NEXT_PUBLIC_ di file client
+    // component kayak ini bikin email & password akun Supabase ke-bundle
+    // langsung ke JS publik, bisa dibaca siapapun. Kodenya juga nggak dipakai
+    // buat apa-apa (auth admin sepenuhnya udah lewat /api/admin/login +
+    // isAdminRequest() di server), jadi dihapus total, bukan cuma di-nonaktifin.
+  };
 
   return (
     <main className="min-h-screen bg-background flex items-center justify-center p-6">
