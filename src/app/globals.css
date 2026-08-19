@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-  /* Default & Light Theme Fallback */
   :root, .dark {
     /* Background & Foreground (Hitam Pekat) */
     --background: #0a0a0c;
@@ -13,14 +12,14 @@
     --card: #141419;
     --card-foreground: #f8fafc;
 
-    /* Borders & Muted Text */
-    --border: #26262d;
+    /* 🔍 BORDER SAMAR & ELEGAN (Dibuat lebih gelap & subtle) */
+    --border: rgba(255, 255, 255, 0.08); /* Dibuat semi-transparan 8% saja */
     --muted: #1c1c22;
     --muted-foreground: #94a3b8;
 
     /* 🎨 WARNA AKSEN PRIMARY (Krem / Warm Gold Elegan) */
-    --primary: #e2c085; /* Warna krem/emas lembut persis seperti di localhost */
-    --primary-foreground: #0a0a0c; /* Teks di atas tombol krem jadi gelap biar kontras */
+    --primary: #e2c085;
+    --primary-foreground: #0a0a0c;
 
     /* Secondary & Accent */
     --secondary: #1e1e24;
@@ -28,7 +27,7 @@
     --accent: #f59e0b;
     --accent-foreground: #000000;
 
-    --input: #26262d;
+    --input: rgba(255, 255, 255, 0.08);
     --ring: #e2c085;
     --radius: 16px;
   }
@@ -37,6 +36,11 @@
     background-color: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans), sans-serif;
+  }
+
+  /* 💡 Paksa semua border komponen agar menggunakan warna samar ini */
+  *, ::before, ::after {
+    border-color: var(--border);
   }
 }
 
