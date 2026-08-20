@@ -12,7 +12,6 @@ async function getLatestArticles() {
     .select('*')
     .order('created_at', { ascending: false })
     .limit(6);
-
   if (error) {
     console.error('Error fetching latest articles:', error);
     return [];
