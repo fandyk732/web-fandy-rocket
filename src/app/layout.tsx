@@ -29,7 +29,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+  metadataBase: new URL('https://fandyalmana.my.id'),
   title: 'Fandy Aziz — Educator, Builder & Digital Explorer',
   description: 'Personal portfolio of Fandy Aziz showcasing education, web development, digital transformation, and vocational innovation from East Java, Indonesia.',
   verification: {
@@ -41,8 +41,15 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Fandy Aziz — Educator, Builder & Digital Explorer',
     description: 'Building digital experiences for education through technology, vocational learning, and real-world innovation.',
+    url: 'https://fandyalmana.my.id',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+      },
+    ],
     type: 'website',
-    images: [{ url: '/assets/images/app_logo.png', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
