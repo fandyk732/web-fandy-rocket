@@ -1,15 +1,30 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { isAdminRequest } from '@/lib/adminAuth';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
-// 🛡️ Buat instance Supabase Admin Server-Side khusus untuk Bypass RLS di API Route
+// 🛡️ Instance Supabase Admin Server-Side untuk Bypass RLS di API Route
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
+// 🔄 Helper function untuk membersihkan cache halaman terkait secara otomatis
+function triggerRevalidation(slug?: string) {
+  try {
+    revalidatePath('/');                 // Refresh Homepage
+    revalidatePath('/writing');           // Refresh List Artikel
+    revalidateTag('articles', 'max');     // Refresh Tag Cache
+    if (slug) {
+      revalidatePath(`/writing/${slug}`); // Refresh Detail Artikel
+    }
+  } catch (err) {
+    console.error('Revalidation error:', err);
+  }
+}
+
+// POST: Tambah Artikel Baru
 export async function POST(request: Request) {
-  // 🔒 Cek Autentikasi Admin
   if (!isAdminRequest(request)) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }
@@ -30,7 +45,6 @@ export async function POST(request: Request) {
       date,
     } = body;
 
-    // 🚀 Menggunakan supabaseAdmin (Service Role) agar tidak ditolak oleh RLS
     const { data, error } = await supabaseAdmin.from('articles').insert([
       {
         title,
@@ -51,12 +65,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     }
 
+    // 🚀 PAKSA NEXT.JS REFRESH CACHE INSTAN
+    triggerRevalidation(slug);
+
     return NextResponse.json({ success: true, data });
   } catch (err) {
     return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
   }
 }
 
+// GET: Ambil Daftar Artikel
 export async function GET(request: Request) {
   if (!isAdminRequest(request)) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
@@ -78,7 +96,7 @@ export async function GET(request: Request) {
   }
 }
 
-// DELETE: Hapus artikel berdasarkan ID
+// DELETE: Hapus Artikel
 export async function DELETE(request: Request) {
   if (!isAdminRequest(request)) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
@@ -98,13 +116,16 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     }
 
+    // 🚀 REFRESH CACHE SETELAH HAPUS ARTIKEL
+    triggerRevalidation();
+
     return NextResponse.json({ success: true, message: 'Artikel berhasil dihapus' });
   } catch (err) {
     return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
   }
 }
 
-// PUT: Update artikel yang sudah ada
+// PUT: Update Artikel
 export async function PUT(request: Request) {
   if (!isAdminRequest(request)) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
@@ -137,6 +158,9 @@ export async function PUT(request: Request) {
     if (error) {
       return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     }
+
+    // 🚀 REFRESH CACHE SETELAH UPDATE ARTIKEL
+    triggerRevalidation(updateData.slug);
 
     return NextResponse.json({ success: true, data });
   } catch (err) {
