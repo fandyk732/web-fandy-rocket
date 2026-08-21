@@ -68,8 +68,17 @@ export default async function ArticleDetailPage({ params }: Props) {
 
   if (!article) notFound();
 
-  // Custom Rendering Heading Markdown dengan ID yang Presisi
+ // Custom Rendering Heading Markdown dengan ID yang Presisi
   const MarkdownComponents = {
+    h1: ({ children }: any) => {
+      const text = String(children);
+      const id = slugify(text);
+      return (
+        <h1 id={id} className="scroll-mt-28 text-3xl font-bold mt-12 mb-6 text-foreground">
+          {children}
+        </h1>
+      );
+    },
     h2: ({ children }: any) => {
       const text = String(children);
       const id = slugify(text);
