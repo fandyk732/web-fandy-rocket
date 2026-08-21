@@ -1,102 +1,118 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import LogoutButton from '@/components/LogoutButton';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 
 export default function EditArticlePage() {
+  const { id } = useParams();
   const router = useRouter();
-  const params = useParams();
-  const id = params.id as string;
 
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
     excerpt: '',
-    category: '',
-    readingTime: '',
+    category: 'Teknologi',
+    readingTime: '5 min read',
     coverImage: '',
+    coverImageCredit: '', // 📷 Credit Foto
     youtubeId: '',
     metaTitle: '',
     metaDescription: '',
     content: '',
   });
 
-  const [fetching, setFetching] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState('');
 
-  // Fetch data artikel berdasarkan ID
+  // Fetch data artikel dari Supabase saat halaman dibuka
   useEffect(() => {
-    const fetchArticleDetail = async () => {
+    async function fetchArticle() {
       try {
-        const res = await fetch('/api/articles');
-        const data = await res.json();
-        if (data.success) {
-          const currentArticle = data.data.find((art: any) => art.id === id);
-          if (currentArticle) {
+        const res = await fetch(`/api/articles?id=${id}`);
+        const result = await res.json();
+
+        if (result.success && result.data) {
+          // Cari artikel yang sesuai dengan ID
+          const art = Array.isArray(result.data) 
+            ? result.data.find((item: any) => item.id === id) 
+            : result.data;
+
+          if (art) {
             setFormData({
-              title: currentArticle.title || '',
-              slug: currentArticle.slug || '',
-              excerpt: currentArticle.excerpt || '',
-              category: currentArticle.category || '',
-              readingTime: currentArticle.reading_time || '',
-              coverImage: currentArticle.cover_image || '',
-              youtubeId: currentArticle.youtube_id || '',
-              metaTitle: currentArticle.meta_title || '',
-              metaDescription: currentArticle.meta_description || '',
-              content: currentArticle.content || '',
+              title: art.title || '',
+              slug: art.slug || '',
+              excerpt: art.excerpt || '',
+              category: art.category || 'Teknologi',
+              readingTime: art.reading_time || '5 min read',
+              coverImage: art.cover_image || '',
+              coverImageCredit: art.cover_image_credit || '', // Auto fill credit foto
+              youtubeId: art.youtube_id || '',
+              metaTitle: art.meta_title || '',
+              metaDescription: art.meta_description || '',
+              content: art.content || '',
             });
           }
         }
       } catch (err) {
-        console.error(err);
+        setMessage('❌ Gagal memuat data artikel.');
       } finally {
-        setFetching(false);
+        setLoading(false);
       }
-    };
+    }
 
-    fetchArticleDetail();
+    if (id) fetchArticle();
   }, [id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setSubmitting(true);
     setMessage('');
 
+    // Kirim update data artikel ke API route (PUT)
     const res = await fetch('/api/articles', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, ...formData }),
+      body: JSON.stringify({
+        id,
+        ...formData,
+      }),
     });
 
     if (res.ok) {
       setMessage('✅ Artikel berhasil diperbarui!');
-      setTimeout(() => router.push('/admin'), 1200);
+      setTimeout(() => router.push('/admin'), 1500);
     } else {
-      setMessage('❌ Gagal memperbarui artikel.');
+      setMessage('❌ Gagal mengupdate artikel.');
     }
-    setLoading(false);
+    setSubmitting(false);
   };
 
-  if (fetching) {
-    return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Memuat data artikel...</div>;
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-background text-foreground py-16 px-6 max-w-3xl mx-auto">
+        <p className="text-center text-muted-foreground">Memuat data artikel...</p>
+      </main>
+    );
   }
 
   return (
     <main className="min-h-screen bg-background text-foreground py-16 px-6 max-w-3xl mx-auto">
+      <Link href="/admin" className="text-sm text-muted-foreground hover:text-primary mb-8 inline-block transition-colors">
+        ← Kembali ke Dashboard
+      </Link>
+
       <div className="flex items-center justify-between mb-8 border-b border-border pb-6">
-        <div>
-          <Link href="/admin" className="text-xs text-muted-foreground hover:text-primary mb-2 inline-block">
-            ← Kembali ke Dashboard
-          </Link>
-          <h1 className="text-3xl font-bold">Edit Artikel</h1>
-        </div>
+        <h1 className="text-3xl font-bold">Edit Artikel</h1>
+        <LogoutButton />
       </div>
 
       {message && <p className="mb-6 p-4 rounded-xl border border-border bg-card text-sm font-medium">{message}</p>}
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Title & Slug */}
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Judul Artikel</label>
@@ -120,6 +136,7 @@ export default function EditArticlePage() {
           </div>
         </div>
 
+        {/* Category & Reading Time */}
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Kategori</label>
@@ -141,17 +158,68 @@ export default function EditArticlePage() {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Excerpt / Description</label>
-          <textarea
-            rows={2}
-            value={formData.excerpt}
-            onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-            className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm"
-            required
-          />
+        {/* Media Integration */}
+        <div className="p-4 bg-muted/20 border border-border rounded-xl space-y-4">
+          <h3 className="text-xs font-mono uppercase text-muted-foreground">Media Integration</h3>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">ImageKit.io Cover URL</label>
+              <input
+                type="url"
+                placeholder="https://ik.imagekit.io/..."
+                value={formData.coverImage}
+                onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
+                className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Credit / Sumber Foto</label>
+              <input
+                type="text"
+                placeholder="Unsplash / John Doe"
+                value={formData.coverImageCredit}
+                onChange={(e) => setFormData({ ...formData, coverImageCredit: e.target.value })}
+                className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm"
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">YouTube Video ID</label>
+            <input
+              type="text"
+              placeholder="Contoh: dQw4w9WgXcQ"
+              value={formData.youtubeId}
+              onChange={(e) => setFormData({ ...formData, youtubeId: e.target.value })}
+              className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm"
+            />
+          </div>
         </div>
 
+        {/* SEO Setup */}
+        <div className="p-4 bg-muted/20 border border-border rounded-xl space-y-4">
+          <h3 className="text-xs font-mono uppercase text-muted-foreground">SEO Metadata</h3>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Meta Title</label>
+            <input
+              type="text"
+              value={formData.metaTitle}
+              onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
+              className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Excerpt / Meta Description</label>
+            <textarea
+              rows={2}
+              value={formData.excerpt}
+              onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+              className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm"
+              required
+            />
+          </div>
+        </div>
+
+        {/* Body Content */}
         <div className="space-y-2">
           <label className="text-sm font-medium">Isi Artikel (Markdown / HTML)</label>
           <textarea
@@ -165,10 +233,10 @@ export default function EditArticlePage() {
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={submitting}
           className="w-full py-3 bg-primary text-primary-foreground font-semibold rounded-xl hover:opacity-90 transition-opacity"
         >
-          {loading ? 'Menyimpan...' : 'Simpan Perubahan 💾'}
+          {submitting ? 'Menyimpan...' : 'Simpan Perubahan 💾'}
         </button>
       </form>
     </main>

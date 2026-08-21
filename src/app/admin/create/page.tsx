@@ -12,6 +12,7 @@ export default function CreateArticlePage() {
     category: 'Teknologi',
     readingTime: '5 min read',
     coverImage: '',
+    coverImageCredit: '', // 📷 TAMBAHAN: Credit Foto
     youtubeId: '',
     metaTitle: '',
     metaDescription: '',
@@ -45,7 +46,19 @@ export default function CreateArticlePage() {
 
     if (res.ok) {
       setMessage('✅ Artikel berhasil dibuat!');
-      setFormData({ title: '', slug: '', excerpt: '', category: 'Teknologi', readingTime: '5 min read', coverImage: '', youtubeId: '', metaTitle: '', metaDescription: '', content: '' });
+      setFormData({
+        title: '',
+        slug: '',
+        excerpt: '',
+        category: 'Teknologi',
+        readingTime: '5 min read',
+        coverImage: '',
+        coverImageCredit: '', // Reset credit foto
+        youtubeId: '',
+        metaTitle: '',
+        metaDescription: '',
+        content: '',
+      });
     } else {
       setMessage('❌ Gagal menyimpan artikel.');
     }
@@ -54,14 +67,13 @@ export default function CreateArticlePage() {
 
   return (
     <main className="min-h-screen bg-background text-foreground py-16 px-6 max-w-3xl mx-auto">
-     
-     <Link href="/admin" className="text-sm text-muted-foreground hover:text-primary mb-8 inline-block transition-colors">
-          ← Kembali ke dashboard Admin
-        </Link>
+      <Link href="/admin" className="text-sm text-muted-foreground hover:text-primary mb-8 inline-block transition-colors">
+        ← Kembali ke dashboard Admin
+      </Link>
 
       <div className="flex items-center justify-between mb-8 border-b border-border pb-6">
         <h1 className="text-3xl font-bold">Tambah Artikel Baru</h1>
-        <LogoutButton/>
+        <LogoutButton />
         <span className="mono-label text-xs bg-primary/10 text-primary border border-primary/20 px-3 py-1 rounded-full">Admin Mode</span>
       </div>
       {message && <p className="mb-6 p-4 rounded-xl border border-border bg-card text-sm font-medium">{message}</p>}
@@ -114,15 +126,28 @@ export default function CreateArticlePage() {
         {/* Integration Links */}
         <div className="p-4 bg-muted/20 border border-border rounded-xl space-y-4">
           <h3 className="text-xs font-mono uppercase text-muted-foreground">Media Integration</h3>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">ImageKit.io Cover URL</label>
-            <input
-              type="url"
-              placeholder="https://ik.imagekit.io/username/image.jpg"
-              value={formData.coverImage}
-              onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-              className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm"
-            />
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">ImageKit.io Cover URL</label>
+              <input
+                type="url"
+                placeholder="https://ik.imagekit.io/username/image.jpg"
+                value={formData.coverImage}
+                onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
+                className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm"
+              />
+            </div>
+            {/* 📷 INPUT CREDIT FOTO */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Credit / Sumber Foto</label>
+              <input
+                type="text"
+                placeholder="Contoh: Unsplash / John Doe"
+                value={formData.coverImageCredit}
+                onChange={(e) => setFormData({ ...formData, coverImageCredit: e.target.value })}
+                className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm"
+              />
+            </div>
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">YouTube Video ID (Tekno Channel)</label>

@@ -38,6 +38,7 @@ export async function POST(request: Request) {
       category,
       readingTime,
       coverImage,
+      coverImageCredit, // 📷 Menerima credit foto dari frontend
       youtubeId,
       metaTitle,
       metaDescription,
@@ -53,6 +54,7 @@ export async function POST(request: Request) {
         category,
         reading_time: readingTime,
         cover_image: coverImage,
+        cover_image_credit: coverImageCredit, // 💾 Simpan ke database Supabase
         youtube_id: youtubeId,
         meta_title: metaTitle,
         meta_description: metaDescription,
@@ -148,6 +150,7 @@ export async function PUT(request: Request) {
         category: updateData.category,
         reading_time: updateData.readingTime,
         cover_image: updateData.coverImage,
+        cover_image_credit: updateData.coverImageCredit, // 💾 Update credit foto di Supabase
         youtube_id: updateData.youtubeId,
         meta_title: updateData.metaTitle,
         meta_description: updateData.metaDescription,

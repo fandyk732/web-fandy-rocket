@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title,
       description,
-      url: `https://www.fandyalmana.my.id/articles/${slug}`,
+      url: `https://fandyalmana.my.id/articles/${slug}`, // Sesuaikan tanpa www
       siteName: 'Fandy Aziz',
       type: 'article',
       images: [{ url: imageUrl, width: 1200, height: 630, alt: title }],
@@ -118,20 +118,29 @@ export default async function ArticleDetailPage({ params }: Props) {
 
       {/* Cover Image */}
       {article.cover_image && (
-        <div className="relative w-full max-w-4xl aspect-video rounded-2xl overflow-hidden mb-12 border border-border/50 bg-black/40">
-          <img
-            src={article.cover_image}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover blur-md opacity-40 scale-105 pointer-events-none"
-          />
-          <img
-            src={article.cover_image}
-            alt={article.title}
-            className="relative z-10 w-full h-full object-contain mx-auto"
-            loading="lazy"
-          />
-        </div>
+        <figure className="w-full max-w-4xl mx-auto mb-12">
+          <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-border/50 bg-black/40">
+            <img
+              src={article.cover_image}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover blur-md opacity-40 scale-105 pointer-events-none"
+            />
+            <img
+              src={article.cover_image}
+              alt={article.title}
+              className="relative z-10 w-full h-full object-contain mx-auto"
+              loading="lazy"
+            />
+          </div>
+
+          {/* 📷 Credit / Sumber Foto */}
+          {article.cover_image_credit && (
+            <figcaption className="mt-2.5 text-center text-xs text-muted-foreground italic font-sans">
+              Foto: {article.cover_image_credit}
+            </figcaption>
+          )}
+        </figure>
       )}
 
       {/* Grid Layout 2 Kolom: Kiri Konten (75%), Kanan TOC Sticky (25%) */}
