@@ -10,6 +10,7 @@ const navLinks = [
   { label: 'About', href: '/about' },
   { label: 'Articles', href: '/articles' },
   { label: 'Guestbook', href: '/guestbook' },
+  { label: 'Playground', href: '/labs' },
 ];
 
 export default function Navbar() {

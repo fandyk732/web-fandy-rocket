@@ -13,7 +13,7 @@ async function getLatestArticles() {
     .from('articles')
     .select('*')
     .order('created_at', { ascending: false })
-    .limit(6);
+    .limit(3);
   if (error) {
     console.error('Error fetching latest articles:', error);
     return [];
