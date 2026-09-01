@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UKK Interactive Network Simulator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { user-select: none; }
+    canvas { background-color: #0f172a; }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans h-screen flex flex-col overflow-hidden relative">
+  
+  <!-- Toolbar Penambahan Device, Kabel, Delete & Glosarium -->
+  <header class="bg-slate-800 border-b border-slate-700 px-4 py-3 flex flex-wrap items-center justify-between gap-3 relative z-10">
+    <!-- Tombol Tambah Perangkat Manual -->
+    <div class="flex items-center gap-1.5 flex-wrap">
+      <span class="text-xs font-semibold text-slate-400 mr-1">Tambah Device:</span>
+      <button onclick="addDevice('cloud')" class="px-2.5 py-1.5 bg-sky-600 hover:bg-sky-500 text-xs font-semibold rounded-lg transition">
+        ☁️ Internet (Cloud)
+      </button>
+      <button onclick="addDevice('router')" class="px-2.5 py-1.5 bg-teal-600 hover:bg-teal-500 text-xs font-semibold rounded-lg transition">
+        ⚙️ Router
+      </button>
+      <button onclick="addDevice('switch')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold rounded-lg transition">
+        🔀 Switch
+      </button>
+      <button onclick="addDevice('wireless')" class="px-2.5 py-1.5 bg-purple-600 hover:bg-purple-500 text-xs font-semibold rounded-lg transition">
+        📡 AP / Home Router
+      </button>
+      <button onclick="addDevice('pc')" class="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-xs font-semibold rounded-lg transition">
+        🖥️ PC Client
+      </button>
+      <button onclick="addDevice('laptop')" class="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold rounded-lg transition">
+        💻 Laptop (Wi-Fi)
+      </button>
+    </div>
+
+    <!-- Mode Kabel, Delete, Tes PING, & Glosarium -->
+    <div class="flex items-center gap-2 flex-wrap">
+      <button id="cableBtn" onclick="toggleConnectMode()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs font-semibold rounded-lg border border-slate-600 transition">
+        🔌 Pasang Kabel: OFF
+      </button>
+      <button id="deleteBtn" onclick="toggleDeleteMode()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs font-semibold rounded-lg border border-slate-600 text-rose-400 transition">
+        ✂️ Mode Hapus: OFF
+      </button>
+      <button onclick="triggerPingSimulation()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold text-xs rounded-lg transition">
+        ⚡ Tes PING Packet
+      </button>
+      <button onclick="resetCanvas()" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-xs font-semibold rounded-lg transition">
+        🗑 Reset All
+      </button>
+      <!-- Tombol Buka Glosarium -->
+      <button onclick="toggleGlossary()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg shadow transition flex items-center gap-1.5">
+        📖 Glosarium IT
+      </button>
+    </div>
+  </header>
+
+  <!-- Canvas Engine -->
+  <div class="flex-1 relative overflow-hidden">
+    <canvas id="netCanvas" class="w-full h-full cursor-crosshair"></canvas>
+    
+    <div class="absolute bottom-4 left-4 bg-slate-950/80 backdrop-blur border border-slate-800 p-3 rounded-xl text-xs text-slate-300 space-y-1 z-0 pointer-events-none">
+      <p class="font-bold text-amber-400">💡 Network Config Ready:</p>
+      <p>• <strong>Double-Click Device</strong> untuk mengatur IP Address, Subnet Mask, Gateway, & DNS Server.</p>
+    </div>
+  </div>
+
+  <!-- Terminal Log Output -->
+  <footer id="statusLog" class="h-24 bg-slate-950 border-t border-slate-800 p-3 font-mono text-xs text-emerald-400 overflow-y-auto relative z-10">
+    > Simulator Siap.
+  </footer>
+
+  <!-- Modal Konfigurasi Node Lengkap -->
+  <div id="configModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-slate-800 border border-slate-700 w-full max-w-md rounded-2xl p-5 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+        <div>
+          <h3 id="modalTitle" class="font-bold text-slate-100 text-sm">Konfigurasi Perangkat</h3>
+          <p class="text-[10px] text-slate-400">Network Interface Settings</p>
+        </div>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-100 font-bold">✕</button>
+      </div>
+
+      <!-- Form Inputs -->
+      <div id="modalBody" class="space-y-3 text-xs"></div>
+      
+      <!-- Modal Action Buttons -->
+      <div class="flex justify-between items-center pt-2 border-t border-slate-700">
+        <button onclick="deleteSelectedNode()" class="px-3 py-1.5 bg-rose-600/20 text-rose-400 border border-rose-600/30 hover:bg-rose-600 hover:text-white rounded-lg text-xs font-semibold transition">
+          🗑 Hapus Device
+        </button>
+        <div class="flex gap-2">
+          <button onclick="closeModal()" class="px-3 py-1.5 bg-slate-700 text-slate-300 rounded-lg">Batal</button>
+          <button onclick="saveConfig()" class="px-4 py-1.5 bg-indigo-600 text-white font-semibold rounded-lg">Simpan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide-Over Drawer Melayang Glosarium (Floating Overlay Full Height) -->
+  <div id="glossaryDrawer" class="fixed top-0 right-0 h-screen w-80 sm:w-96 bg-slate-900/95 backdrop-blur-md border-l border-slate-700/80 shadow-2xl z-[9999] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+    
+    <!-- Header Panel -->
+    <div class="p-4 bg-slate-800/80 border-b border-slate-700 flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <span class="text-base">📖</span>
+        <h3 class="font-bold text-slate-100 text-sm">Kamus & Glosarium Jaringan</h3>
+      </div>
+      <button onclick="toggleGlossary()" class="text-slate-400 hover:text-white font-bold p-1 rounded-lg hover:bg-slate-700/60 transition">
+        ✕
+      </button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="p-3 border-b border-slate-800 bg-slate-900/50">
+      <div class="relative">
+        <input 
+          id="glossarySearch" 
+          type="text" 
+          placeholder="Cari istilah (cth: ICMP, Router, IP)..." 
+          onkeyup="filterGlossary()"
+          class="w-full bg-slate-950 border border-slate-700 rounded-lg pl-3 pr-8 py-2 text-xs text-slate-100 focus:outline-none focus:border-indigo-500 placeholder-slate-500"
+        />
+      </div>
+    </div>
+
+    <!-- Daftar Kartu Glosarium -->
+    <div id="glossaryList" class="flex-1 overflow-y-auto p-3 space-y-3 text-xs">
+      <!-- Item di-render via JS -->
+    </div>
+
+  </div>
+
+  <!-- Javascript Engine -->
+  <script>
+    const canvas = document.getElementById('netCanvas');
+    const ctx = canvas.getContext('2d');
+    const logElem = document.getElementById('statusLog');
+
+    function resize() {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+      draw();
+    }
+    window.addEventListener('resize', resize);
+
+    function log(msg) {
+      logElem.innerHTML += `<br>> ${msg}`;
+      logElem.scrollTop = logElem.scrollHeight;
+    }
+
+    let nodes = [];
+    let links = [];
+    let isConnecting = false;
+    let isDeleting = false;
+    let selectedForCable = null;
+    let draggedNode = null;
+    let selectedNode = null;
+    let animations = [];
+
+    function addDevice(type) {
+      const id = `${type}_${Date.now().toString().slice(-4)}`;
+      const counts = nodes.filter(n => n.type === type).length + 1;
+      
+      const labels = {
+        cloud: `Internet (ISP)`,
+        router: `Router_${counts}`,
+        switch: `Switch_${counts}`,
+        wireless: `AP_HomeRouter_${counts}`,
+        pc: `PC_User_${counts}`,
+        laptop: `Laptop_User_${counts}`
+      };
+
+      const defaultIps = {
+        cloud: '192.168.1.1',
+        router: '10.10.10.1',
+        pc: `10.10.10.${counts + 1}`,
+        laptop: `192.168.1.${counts + 10}`
+      };
+
+      const newNode = {
+        id,
+        type,
+        label: labels[type],
+        ip: defaultIps[type] || '',
+        netmask: '255.255.255.0',
+        gateway: (type === 'pc' || type === 'laptop') ? '10.10.10.1' : '',
+        dns: '8.8.8.8',
+        ssid: (type === 'wireless' || type === 'laptop') ? 'UKK_AP' : '',
+        x: Math.random() * (canvas.width - 200) + 100,
+        y: Math.random() * (canvas.height - 200) + 100,
+        radius: 26
+      };
+
+      nodes.push(newNode);
+      log(`Menambahkan perangkat: ${newNode.label}`);
+      draw();
+    }
+
+    function toggleConnectMode() {
+      isConnecting = !isConnecting;
+      if (isConnecting) isDeleting = false;
+      selectedForCable = null;
+      updateToolbarUI();
+    }
+
+    function toggleDeleteMode() {
+      isDeleting = !isDeleting;
+      if (isDeleting) isConnecting = false;
+      selectedForCable = null;
+      updateToolbarUI();
+    }
+
+    function updateToolbarUI() {
+      const cableBtn = document.getElementById('cableBtn');
+      const deleteBtn = document.getElementById('deleteBtn');
+
+      cableBtn.innerText = isConnecting ? '🔌 Pasang Kabel: ON' : '🔌 Pasang Kabel: OFF';
+      cableBtn.classList.toggle('bg-amber-600', isConnecting);
+
+      deleteBtn.innerText = isDeleting ? '✂️ Mode Hapus: ON' : '✂️ Mode Hapus: OFF';
+      deleteBtn.classList.toggle('bg-rose-600', isDeleting);
+      deleteBtn.classList.toggle('text-white', isDeleting);
+    }
+
+    function resetCanvas() {
+      nodes = [];
+      links = [];
+      animations = [];
+      log("Canvas dibersihkan.");
+      draw();
+    }
+
+    function deleteNodeById(nodeId) {
+      const target = nodes.find(n => n.id === nodeId);
+      if (!target) return;
+
+      nodes = nodes.filter(n => n.id !== nodeId);
+      links = links.filter(l => l.from !== nodeId && l.to !== nodeId);
+      log(`🗑 Perangkat ${target.label} dan jalur kabelnya dihapus.`);
+      draw();
+    }
+
+    function deleteSelectedNode() {
+      if (selectedNode) {
+        deleteNodeById(selectedNode.id);
+        closeModal();
+      }
+    }
+
+    // Render Canvas Loop
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Gambar Kabel
+      links.forEach(l => {
+        const n1 = nodes.find(n => n.id === l.from);
+        const n2 = nodes.find(n => n.id === l.to);
+        if (!n1 || !n2) return;
+
+        ctx.beginPath();
+        ctx.moveTo(n1.x, n1.y);
+        ctx.lineTo(n2.x, n2.y);
+        if (l.type === 'wifi') {
+          ctx.setLineDash([6, 6]);
+          ctx.strokeStyle = '#38bdf8';
+        } else {
+          ctx.setLineDash([]);
+          ctx.strokeStyle = '#475569';
+        }
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.setLineDash([]);
+      });
+
+      // Gambar Node Devices
+      nodes.forEach(n => {
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+
+        if (n.type === 'cloud') ctx.fillStyle = '#0284c7';
+        else if (n.type === 'router') ctx.fillStyle = '#0d9488';
+        else if (n.type === 'switch') ctx.fillStyle = '#16a34a';
+        else if (n.type === 'wireless') ctx.fillStyle = '#7c3aed';
+        else ctx.fillStyle = '#2563eb';
+
+        ctx.fill();
+        ctx.strokeStyle = '#f8fafc';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'center';
+        let icon = n.type === 'cloud' ? '☁️' : n.type === 'router' ? '⚙️' : n.type === 'switch' ? '🔀' : n.type === 'wireless' ? '📡' : n.type === 'pc' ? '🖥️' : '💻';
+        ctx.fillText(icon, n.x, n.y + 4);
+
+        ctx.fillStyle = '#f1f5f9';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText(n.label, n.x, n.y + 40);
+
+        if (n.ip) {
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '10px monospace';
+          ctx.fillText(n.ip, n.x, n.y + 52);
+        }
+      });
+
+      // Render Animasi PING Packet
+      animations.forEach((anim, idx) => {
+        const px = anim.from.x + (anim.to.x - anim.from.x) * anim.progress;
+        const py = anim.from.y + (anim.to.y - anim.from.y) * anim.progress;
+
+        ctx.beginPath();
+        ctx.arc(px, py, 7, 0, Math.PI * 2);
+        ctx.fillStyle = anim.success ? '#22c55e' : '#ef4444'; // Green = OK, Red = FAIL
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        anim.progress += 0.03;
+
+        if (anim.progress >= 1) {
+          if (anim.success) {
+            log(`✅ Reply from ${anim.to.ip}: bytes=32 time<1ms TTL=64 (${anim.from.label} ➔ ${anim.to.label})`);
+          } else {
+            log(`❌ Request timed out (${anim.from.label} ➔ ${anim.to.label}): ${anim.reason}`);
+          }
+          animations.splice(idx, 1);
+        }
+      });
+
+      if (animations.length > 0) requestAnimationFrame(draw);
+    }
+
+    // Helper IP Integer Converter
+    function ipToInt(ip) {
+      return ip.split('.').reduce((acc, octet) => (acc << 8) + parseInt(octet, 10), 0) >>> 0;
+    }
+
+    function isSameSubnet(ip1, ip2, maskStr = '255.255.255.0') {
+      try {
+        const mask = ipToInt(maskStr);
+        return (ipToInt(ip1) & mask) === (ipToInt(ip2) & mask);
+      } catch (e) {
+        return false;
+      }
+    }
+
+    // Validasi PING Simulation
+    function triggerPingSimulation() {
+      if (links.length === 0) {
+        log("❌ Gagal PING: Belum ada kabel/jalur jaringan terhubung.");
+        return;
+      }
+
+      log("⚡ Memulai Pengujian Paket PING...");
+
+      links.forEach((link, i) => {
+        const n1 = nodes.find(n => n.id === link.from);
+        const n2 = nodes.find(n => n.id === link.to);
+
+        if (!n1 || !n2) return;
+
+        let isSuccess = true;
+        let failReason = "";
+
+        if (!n1.ip || !n2.ip) {
+          if (n1.type !== 'switch' && n1.type !== 'wireless' && n2.type !== 'switch' && n2.type !== 'wireless') {
+            isSuccess = false;
+            failReason = "IP Address belum diatur di salah satu perangkat";
+          }
+        } 
+        
+        if (isSuccess && (n1.type === 'laptop' || n2.type === 'laptop') && n1.ssid !== n2.ssid) {
+          isSuccess = false;
+          failReason = "SSID Wi-Fi tidak cocok / Mismatch";
+        }
+
+        if (isSuccess && n1.ip && n2.ip) {
+          const mask1 = n1.netmask || '255.255.255.0';
+          const sameSubnet = isSameSubnet(n1.ip, n2.ip, mask1);
+
+          if (!sameSubnet) {
+            if (n1.type !== 'router') {
+              if (!n1.gateway) {
+                isSuccess = false;
+                failReason = "Destination Host Unreachable (Beda Subnet & Gateway Kosong)";
+              } else if (!isSameSubnet(n1.ip, n1.gateway, mask1)) {
+                isSuccess = false;
+                failReason = "Request Timed Out (Gateway tidak se-subnet dengan Host)";
+              } else {
+                if (n2.type !== 'router' && !isSameSubnet(n2.ip, n1.gateway, mask1)) {
+                  isSuccess = false;
+                  failReason = "Destination Host Unreachable (Routing antar Subnet Gagal)";
+                }
+              }
+            }
+          }
+        }
+
+        setTimeout(() => {
+          animations.push({ 
+            from: n1, 
+            to: n2, 
+            progress: 0, 
+            success: isSuccess,
+            reason: failReason 
+          });
+          draw();
+        }, i * 600);
+      });
+    }
+
+    // Mouse Interactions
+    let clickTimer = null;
+
+    canvas.addEventListener('mousedown', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+
+      const clickedNode = nodes.find(n => Math.hypot(n.x - mx, n.y - my) < n.radius);
+
+      if (isDeleting) {
+        if (clickedNode) {
+          deleteNodeById(clickedNode.id);
+          return;
+        }
+        const clickedLinkIdx = links.findIndex(l => {
+          const n1 = nodes.find(n => n.id === l.from);
+          const n2 = nodes.find(n => n.id === l.to);
+          if (!n1 || !n2) return false;
+          const dist = Math.abs((n2.y - n1.y) * mx - (n2.x - n1.x) * my + n2.x * n1.y - n2.y * n1.x) / Math.hypot(n2.y - n1.y, n2.x - n1.x);
+          return dist < 8;
+        });
+
+        if (clickedLinkIdx !== -1) {
+          links.splice(clickedLinkIdx, 1);
+          log("✂️ Kabel berhasil dipotong.");
+          draw();
+          return;
+        }
+      }
+
+      if (isConnecting && clickedNode) {
+        if (!selectedForCable) {
+          selectedForCable = clickedNode;
+          log(`Pilih node tujuan kabel dari ${clickedNode.label}...`);
+        } else if (selectedForCable.id !== clickedNode.id) {
+          links.push({ from: selectedForCable.id, to: clickedNode.id, type: 'straight' });
+          log(`Kabel terhubung: ${selectedForCable.label} ↔ ${clickedNode.label}`);
+          selectedForCable = null;
+          draw();
+        }
+      } else if (clickedNode) {
+        draggedNode = clickedNode;
+        if (clickTimer == null) {
+          clickTimer = setTimeout(() => { clickTimer = null; }, 250);
+        } else {
+          clearTimeout(clickTimer);
+          clickTimer = null;
+          openConfigModal(clickedNode);
+        }
+      }
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (draggedNode) {
+        const rect = canvas.getBoundingClientRect();
+        draggedNode.x = e.clientX - rect.left;
+        draggedNode.y = e.clientY - rect.top;
+        draw();
+      }
+    });
+
+    canvas.addEventListener('mouseup', () => draggedNode = null);
+
+    // Modal Konfigurasi
+    function openConfigModal(node) {
+      selectedNode = node;
+      document.getElementById('modalTitle').innerText = `Konfigurasi ${node.label}`;
+      
+      let html = `
+        <div>
+          <label class="block text-slate-400 mb-1">Nama Perangkat:</label>
+          <input id="cfgLabel" type="text" value="${node.label}" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-slate-100 font-medium">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-slate-400 mb-1">IP Address:</label>
+            <input id="cfgIp" type="text" value="${node.ip || ''}" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-slate-100 font-mono" placeholder="10.10.10.x">
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">Subnet Mask:</label>
+            <input id="cfgNetmask" type="text" value="${node.netmask || '255.255.255.0'}" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-slate-100 font-mono" placeholder="255.255.255.0">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-slate-400 mb-1">Default Gateway:</label>
+            <input id="cfgGw" type="text" value="${node.gateway || ''}" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-slate-100 font-mono" placeholder="10.10.10.1">
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">DNS Server:</label>
+            <input id="cfgDns" type="text" value="${node.dns || '8.8.8.8'}" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-slate-100 font-mono" placeholder="8.8.8.8">
+          </div>
+        </div>
+      `;
+
+      document.getElementById('modalBody').innerHTML = html;
+      document.getElementById('configModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('configModal').classList.add('hidden');
+      selectedNode = null;
+    }
+
+    function saveConfig() {
+      if (!selectedNode) return;
+      selectedNode.label = document.getElementById('cfgLabel').value;
+      selectedNode.ip = document.getElementById('cfgIp').value;
+      selectedNode.netmask = document.getElementById('cfgNetmask').value;
+      selectedNode.gateway = document.getElementById('cfgGw').value;
+      selectedNode.dns = document.getElementById('cfgDns').value;
+
+      log(`📝 Konfigurasi ${selectedNode.label} disimpan! (IP: ${selectedNode.ip}, GW: ${selectedNode.gateway}, DNS: ${selectedNode.dns})`);
+      closeModal();
+      draw();
+    }
+
+    setTimeout(resize, 100);
+
+    // ==========================================
+    // GLOSARIUM NETWORK LOGIC
+    // ==========================================
+    let glossaryData = [];
+
+    async function toggleGlossary() {
+      const drawer = document.getElementById('glossaryDrawer');
+      drawer.classList.toggle('translate-x-full');
+
+      if (!drawer.classList.contains('translate-x-full') && glossaryData.length === 0) {
+        try {
+          const res = await fetch('./glossary.json');
+          glossaryData = await res.json();
+          renderGlossary(glossaryData);
+        } catch (err) {
+          document.getElementById('glossaryList').innerHTML = '<p class="text-rose-400 text-center py-4">Gagal memuat file glossary.json</p>';
+        }
+      }
+    }
+
+    function renderGlossary(items) {
+      const container = document.getElementById('glossaryList');
+      if (items.length === 0) {
+        container.innerHTML = '<p class="text-slate-500 text-center py-6">Istilah tidak ditemukan.</p>';
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="bg-slate-800/50 border border-slate-700/60 rounded-xl p-3.5 hover:border-indigo-500/50 transition duration-200 space-y-2">
+          <h4 class="font-semibold text-indigo-400 text-xs tracking-wide">${item.term}</h4>
+          <p class="text-slate-300 text-[11px] leading-relaxed font-sans">${item.desc}</p>
+          <p class="text-[10px] text-slate-500 italic border-t border-slate-700/50 pt-2 mt-1">EN: ${item.def_en}</p>
+        </div>
+      `).join('');
+    }
+
+    function filterGlossary() {
+      const query = document.getElementById('glossarySearch').value.toLowerCase().trim();
+      const filtered = glossaryData.filter(item => 
+        item.term.toLowerCase().includes(query) || 
+        item.desc.toLowerCase().includes(query) ||
+        item.def_en.toLowerCase().includes(query)
+      );
+      renderGlossary(filtered);
+    }
+  </script>
+
+</body>
+</html>

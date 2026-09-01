@@ -1,0 +1,542 @@
+[
+  {
+    "term": "3G",
+    "desc": "Generasi ketiga teknologi telekomunikasi seluler, biasanya menawarkan kecepatan data yang lebih tinggi daripada generasi sebelumnya.",
+    "def_en": "Third generation of mobile telecommunications technology, typically  offering higher data rates than earlier generations."
+  },
+  {
+    "term": "4G",
+    "desc": "Generasi keempat teknologi telekomunikasi seluler, biasanya menawarkan kecepatan data yang bahkan lebih tinggi daripada 3G.",
+    "def_en": "Fourth generation of mobile telecommunications technology, typically  offering even higher data rates than 3G."
+  },
+  {
+    "term": "5G",
+    "desc": "Generasi kelima teknologi telekomunikasi seluler, menawarkan kecepatan lebih cepat dan bandwidth lebih tinggi daripada 4G.",
+    "def_en": "Fifth generation of mobile telecommunications technology, offering faster  speeds and higher bandwidth than 4G."
+  },
+  {
+    "term": "Access Control List (ACL)",
+    "desc": "Seperangkat aturan yang mengontrol lalu lintas masuk dan keluar dari jaringan atau perangkat individual.",
+    "def_en": "A set of rules that controls traffic in and out of a network or individual  device."
+  },
+  {
+    "term": "Address",
+    "desc": "Pengidentifikasi unik untuk komputer atau perangkat tertentu di jaringan.",
+    "def_en": "Unique identifier for a specific computer or device on a network."
+  },
+  {
+    "term": "Address Resolution Protocol (ARP)",
+    "desc": "Protokol yang digunakan untuk memetakan alamat IP ke alamat fisik (MAC address).",
+    "def_en": "Protocol used to map an IP address to a physical (MAC) address."
+  },
+  {
+    "term": "Ad-hoc Network",
+    "desc": "Jaringan nirkabel sementara yang dibentuk secara spontan tanpa infrastruktur terpusat.",
+    "def_en": "Temporary wireless network formed spontaneously without centralized infrastructure."
+  },
+  {
+    "term": "Application Layer",
+    "desc": "Lapisan teratas dari model OSI, menyediakan layanan jaringan langsung ke aplikasi pengguna.",
+    "def_en": "Top layer of the OSI model, providing network services directly to user applications."
+  },
+  {
+    "term": "Asymmetric Digital Subscriber Line (ADSL)",
+    "desc": "Jenis teknologi DSL yang menyediakan kecepatan unduh lebih cepat daripada kecepatan unggah.",
+    "def_en": "Type of DSL technology providing faster download speeds than upload speeds."
+  },
+  {
+    "term": "Authentication, Authorization, and Accounting (AAA)",
+    "desc": "Kerangka kerja untuk mengontrol akses ke sumber daya, mengandalkan identitas pengguna, hak akses, dan pelacakan penggunaan.",
+    "def_en": "Framework for controlling access to resources, relying on user identity, rights, and usage tracking."
+  },
+  {
+    "term": "Autonomous System (AS)",
+    "desc": "Kumpulan jaringan IP di bawah kontrol satu entitas yang memiliki kebijakan routing yang jelas.",
+    "def_en": "Collection of IP networks under the control of a single entity with a defined routing policy."
+  },
+  {
+    "term": "Backbone",
+    "desc": "Bagian utama jaringan yang menghubungkan berbagai segmen dan menangani sebagian besar lalu lintas data.",
+    "def_en": "Primary part of a network that connects various segments and handles high-volume traffic."
+  },
+  {
+    "term": "Bandwidth",
+    "desc": "Kapasitas maksimum jalur komunikasi untuk mentransfer data dalam waktu tertentu.",
+    "def_en": "Maximum capacity of a communication channel to transfer data over time."
+  },
+  {
+    "term": "Base Station",
+    "desc": "Transiver radio pusat yang menghubungkan perangkat seluler ke jaringan telekomunikasi utama.",
+    "def_en": "Central radio transceiver connecting mobile devices to the main telecommunications network."
+  },
+  {
+    "term": "BGP (Border Gateway Protocol)",
+    "desc": "Protokol routing eksterior yang digunakan untuk bertukar informasi routing antar sistem otonom di internet.",
+    "def_en": "Exterior gateway protocol used to exchange routing information between autonomous systems on the internet."
+  },
+  {
+    "term": "Bridge",
+    "desc": "Perangkat jaringan yang menghubungkan dua atau lebih segmen jaringan lokal (LAN) pada lapisan data link.",
+    "def_en": "Network device connecting two or more local area network (LAN) segments at the data link layer."
+  },
+  {
+    "term": "Broadband",
+    "desc": "Teknologi transmisi data berkecepatan tinggi yang dapat membawa banyak sinyal secara bersamaan.",
+    "def_en": "High-speed data transmission technology carrying multiple signals simultaneously."
+  },
+  {
+    "term": "Broadcast",
+    "desc": "Metode pengiriman paket data ke seluruh perangkat yang terhubung dalam satu segmen jaringan.",
+    "def_en": "Method of sending data packets to all devices connected within a single network segment."
+  },
+  {
+    "term": "Carrier Sense Multiple Access with Collision Detection (CSMA/CD)",
+    "desc": "Protokol jaringan yang digunakan pada Ethernet untuk mendeteksi dan mengelola bentrokan data.",
+    "def_en": "Network protocol used in Ethernet to detect and manage data collisions."
+  },
+  {
+    "term": "Channel",
+    "desc": "Jalur komunikasi spesifik atau frekuensi radio yang digunakan untuk transmisi data.",
+    "def_en": "Specific communication path or radio frequency used for data transmission."
+  },
+  {
+    "term": "Client",
+    "desc": "Perangkat atau aplikasi yang meminta layanan atau data dari server pusat.",
+    "def_en": "Device or application that requests services or data from a central server."
+  },
+  {
+    "term": "Coaxial Cable",
+    "desc": "Kabel transmisi yang terdiri dari konduktor tembaga di pusat, dibungkus isolator dan pelindung logam.",
+    "def_en": "Transmission cable with a central copper conductor surrounded by insulation and metallic shielding."
+  },
+  {
+    "term": "Collision Domain",
+    "desc": "Area fisik jaringan tempat paket data dari dua perangkat bisa saling bertabrakan.",
+    "def_en": "Physical network area where data packets from two devices can collide."
+  },
+  {
+    "term": "Data Link Layer",
+    "desc": "Lapisan kedua model OSI yang bertanggung jawab untuk pengiriman data antar perangkat dalam jaringan lokal yang sama.",
+    "def_en": "Second layer of the OSI model responsible for node-to-node data transfer on the same local network."
+  },
+  {
+    "term": "Datagram",
+    "desc": "Unit transfer data independen dalam jaringan packet-switched tanpa jaminan pengiriman.",
+    "def_en": "Self-contained data transfer unit in a packet-switched network without delivery guarantees."
+  },
+  {
+    "term": "Default Gateway",
+    "desc": "Alamat IP perangkat (seperti router) yang digunakan untuk mengirim lalu lintas luar ke jaringan lain.",
+    "def_en": "IP address of a device (like a router) used to route traffic outside the local network."
+  },
+  {
+    "term": "Demilitarized Zone (DMZ)",
+    "desc": "Subnet netral yang memisahkan jaringan internal tepercaya dari jaringan publik seperti internet.",
+    "def_en": "Neutral subnet separating a trusted internal network from an untrusted public network."
+  },
+  {
+    "term": "Denial of Service (DoS)",
+    "desc": "Serangan keamanan yang bertujuan membuat layanan atau perangkat tidak tersedia bagi pengguna yang sah.",
+    "def_en": "Security attack aimed at making a service or device unavailable to legitimate users."
+  },
+  {
+    "term": "DHCP (Dynamic Host Configuration Protocol)",
+    "desc": "Protokol yang secara otomatis membagikan alamat IP dan parameter konfigurasi ke perangkat client.",
+    "def_en": "Protocol that automatically assigns IP addresses and network parameters to client devices."
+  },
+  {
+    "term": "DNS (Domain Name System)",
+    "desc": "Sistem terdistribusi yang menerjemahkan nama domain yang mudah dibaca menjadi alamat IP numerik.",
+    "def_en": "Distributed system translating human-readable domain names into numerical IP addresses."
+  },
+  {
+    "term": "Domain",
+    "desc": "Kelompok jaringan atau komputer yang dikelola di bawah satu set aturan dan nama yang sama.",
+    "def_en": "Group of computers or networks managed under a single set of rules and common name."
+  },
+  {
+    "term": "Domain Name",
+    "desc": "Alamat teks yang digunakan untuk mengidentifikasi situs web atau sumber daya di internet.",
+    "def_en": "Text-based address used to identify a website or online resource on the internet."
+  },
+  {
+    "term": "DSL (Digital Subscriber Line)",
+    "desc": "Teknologi transmisi data broadband yang menggunakan saluran telepon tembaga standar.",
+    "def_en": "Broadband data transmission technology utilizing standard copper telephone lines."
+  },
+  {
+    "term": "Encapsulation",
+    "desc": "Proses membungkus data dengan header dan trailer protokol di setiap lapisan OSI sebelum dikirim.",
+    "def_en": "Process of wrapping data with protocol headers and trailers at each OSI layer before transmission."
+  },
+  {
+    "term": "Encryption",
+    "desc": "Proses mengacak data menjadi format yang tidak bisa dibaca tanpa kunci dekripsi yang sesuai.",
+    "def_en": "Process of encoding data into an unreadable format without the appropriate decryption key."
+  },
+  {
+    "term": "Ethernet",
+    "desc": "Teknologi standar untuk menghubungkan perangkat dalam jaringan area lokal (LAN) berbasis kabel.",
+    "def_en": "Standard technology for connecting devices in a wired local area network (LAN)."
+  },
+  {
+    "term": "Fiber Optic Cable",
+    "desc": "Kabel transmisi data berkecepatan tinggi yang mengirimkan informasi berupa pulsa cahaya melalui serat kaca.",
+    "def_en": "High-speed data cable transmitting information as light pulses through glass fibers."
+  },
+  {
+    "term": "Firewall",
+    "desc": "Sistem keamanan yang memantau dan menyaring lalu lintas jaringan berdasarkan aturan keamanan yang ditentukan.",
+    "def_en": "Security system monitoring and filtering network traffic based on predefined security rules."
+  },
+  {
+    "term": "Frame",
+    "desc": "Unit data pada Data Link Layer yang memuat header, payload data, dan pengecekan kesalahan.",
+    "def_en": "Data Link Layer unit containing headers, data payload, and error-checking info."
+  },
+  {
+    "term": "FTP (File Transfer Protocol)",
+    "desc": "Protokol standar yang digunakan untuk mengunggah atau mengunduh berkas antara client dan server.",
+    "def_en": "Standard network protocol used to transfer files between a client and server."
+  },
+  {
+    "term": "Full Duplex",
+    "desc": "Mode komunikasi yang memungkinkan transmisi data dua arah terjadi secara bersamaan.",
+    "def_en": "Communication mode allowing simultaneous two-way data transmission."
+  },
+  {
+    "term": "Gateway",
+    "desc": "Node jaringan yang menghubungkan dua sistem jaringan dengan protokol atau arsitektur yang berbeda.",
+    "def_en": "Network node connecting two systems with different protocols or architectures."
+  },
+  {
+    "term": "Half Duplex",
+    "desc": "Mode komunikasi yang memungkinkan data dikirim dua arah tetapi secara bergantian, tidak bersamaan.",
+    "def_en": "Communication mode supporting two-way transmission, but only one direction at a time."
+  },
+  {
+    "term": "Host",
+    "desc": "Komputer atau perangkat lain yang terhubung ke jaringan dan menyediakan atau menggunakan layanan.",
+    "def_en": "Computer or device connected to a network that provides or consumes services."
+  },
+  {
+    "term": "HTTP (Hypertext Transfer Protocol)",
+    "desc": "Protokol dasar yang digunakan untuk mendistribusikan halaman web dan dokumen di World Wide Web.",
+    "def_en": "Fundamental protocol used to transmit web pages and documents across the World Wide Web."
+  },
+  {
+    "term": "HTTPS (Hypertext Transfer Protocol Secure)",
+    "desc": "Versi aman dari HTTP yang menggunakan enkripsi SSL/TLS untuk melindungi komunikasi data.",
+    "def_en": "Secure version of HTTP using SSL/TLS encryption to protect data communication."
+  },
+  {
+    "term": "Hub",
+    "desc": "Perangkat keras sederhana yang meneruskan data dari satu port ke seluruh port lain tanpa menyaring.",
+    "def_en": "Basic hardware device that broadcasts data received on one port to all other ports without filtering."
+  },
+  {
+    "term": "ICMP (Internet Control Message Protocol)",
+    "desc": "Protokol yang digunakan oleh perangkat jaringan untuk mengirim pesan kesalahan dan informasi operasional (misal PING).",
+    "def_en": "Protocol used by network devices to send error messages and operational info (e.g., PING)."
+  },
+  {
+    "term": "IEEE 802.11",
+    "desc": "Set standar internasional yang mengatur teknologi komunikasi jaringan nirkabel (Wi-Fi).",
+    "def_en": "Set of international standards governing wireless local area network (Wi-Fi) technology."
+  },
+  {
+    "term": "IP (Internet Protocol)",
+    "desc": "Protokol utama dalam suite TCP/IP yang bertanggung jawab untuk mengalamati dan merutekan paket data.",
+    "def_en": "Principal protocol in the TCP/IP suite responsible for addressing and routing data packets."
+  },
+  {
+    "term": "IP Address",
+    "desc": "Label numerik unik yang diberikan ke setiap perangkat yang terhubung ke jaringan berbasis IP.",
+    "def_en": "Unique numerical label assigned to each device connected to an IP-based network."
+  },
+  {
+    "term": "IP Security (IPsec)",
+    "desc": "Kerangka protokol untuk mengamankan komunikasi IP melalui otentikasi dan enkripsi paket.",
+    "def_en": "Protocol suite securing IP communications via packet authentication and encryption."
+  },
+  {
+    "term": "IPv4 (Internet Protocol version 4)",
+    "desc": "Versi IP 32-bit yang dapat menyediakan hingga sekitar 4,3 miliar alamat unik.",
+    "def_en": "32-bit IP version providing up to approximately 4.3 billion unique addresses."
+  },
+  {
+    "term": "IPv6 (Internet Protocol version 6)",
+    "desc": "Versi IP 128-bit yang dikembangkan untuk menggantikan IPv4 dengan ruang alamat yang jauh lebih besar.",
+    "def_en": "128-bit IP version developed to replace IPv4 with a vastly larger address space."
+  },
+  {
+    "term": "ISDN (Integrated Services Digital Network)",
+    "desc": "Standar jaringan telepon digital lama untuk mentransfer suara dan data secara bersamaan.",
+    "def_en": "Older digital telephone network standard for transmitting voice and data simultaneously."
+  },
+  {
+    "term": "ISP (Internet Service Provider)",
+    "desc": "Perusahaan atau organisasi yang menyediakan akses internet kepada pelanggan.",
+    "def_en": "Company or organization providing internet access services to customers."
+  },
+  {
+    "term": "Jumbo Frame",
+    "desc": "Frame Ethernet dengan payload yang lebih besar dari standar 1500 byte (biasanya hingga 9000 byte).",
+    "def_en": "Ethernet frame with a payload larger than the standard 1500 bytes (typically up to 9000 bytes)."
+  },
+  {
+    "term": "LAN (Local Area Network)",
+    "desc": "Jaringan komputer yang mencakup area geografis terbatas seperti rumah, kantor, atau gedung sekolah.",
+    "def_en": "Computer network covering a limited geographical area like a home, office, or school building."
+  },
+  {
+    "term": "Latency",
+    "desc": "Waktu penundaan yang dibutuhkan data untuk berpindah dari titik asal ke titik tujuan.",
+    "def_en": "Time delay required for data to travel from its origin to its destination."
+  },
+  {
+    "term": "Layer 2 Switch",
+    "desc": "Switch yang meneruskan data berdasarkan alamat MAC pada Data Link Layer.",
+    "def_en": "Switch forwarding data based on MAC addresses at the Data Link Layer."
+  },
+  {
+    "term": "Layer 3 Switch",
+    "desc": "Switch canggih yang mampu melakukan tugas routing berdasarkan alamat IP (Network Layer).",
+    "def_en": "Advanced switch capable of performing routing tasks based on IP addresses (Network Layer)."
+  },
+  {
+    "term": "Load Balancer",
+    "desc": "Perangkat atau aplikasi yang membagi lalu lintas jaringan secara merata ke beberapa server.",
+    "def_en": "Device or application distributing network traffic evenly across multiple servers."
+  },
+  {
+    "term": "MAC (Media Access Control) Address",
+    "desc": "Alamat fisik unik yang tertanam pada kartu antarmuka jaringan (NIC) oleh pabrik.",
+    "def_en": "Unique physical address embedded on a network interface card (NIC) by the manufacturer."
+  },
+  {
+    "term": "MAN (Metropolitan Area Network)",
+    "desc": "Jaringan yang mencakup area geografis seluas kota atau wilayah perkotaan.",
+    "def_en": "Network covering a geographical area the size of a city or metropolitan region."
+  },
+  {
+    "term": "Maximum Transmission Unit (MTU)",
+    "desc": "Ukuran paket data terbesar dalam byte yang dapat dikirimkan melalui antarmuka jaringan tertentu.",
+    "def_en": "Largest data packet size in bytes that can be transmitted over a network interface."
+  },
+  {
+    "term": "Multicast",
+    "desc": "Teknik pengiriman data dari satu pengirim ke sekelompok penerima tertentu dalam satu waktu.",
+    "def_en": "Data transmission technique sending information from one sender to a specific group of receivers."
+  },
+  {
+    "term": "NAT (Network Address Translation)",
+    "desc": "Metode pemetaan alamat IP pribadi di jaringan lokal ke satu atau beberapa alamat IP publik.",
+    "def_en": "Method of mapping private IP addresses on a local network to one or more public IP addresses."
+  },
+  {
+    "term": "Network Interface Card (NIC)",
+    "desc": "Komponen perangkat keras yang memungkinkan komputer terhubung ke kabel atau sinyal jaringan.",
+    "def_en": "Hardware component enabling a computer to connect to a network cable or wireless signal."
+  },
+  {
+    "term": "Network Layer",
+    "desc": "Lapisan ketiga model OSI yang menangani pengalamatan logis dan menentukan rute terbaik untuk data.",
+    "def_en": "Third layer of the OSI model handling logical addressing and best path routing."
+  },
+  {
+    "term": "Node",
+    "desc": "Setiap perangkat (seperti PC, switch, atau printer) yang terhubung dalam sebuah jaringan.",
+    "def_en": "Any connected device (such as a PC, switch, or printer) within a network."
+  },
+  {
+    "term": "OSI Model (Open Systems Interconnection)",
+    "desc": "Kerangka acuan 7 lapisan yang menjelaskan bagaimana sistem jaringan berkomunikasi.",
+    "def_en": "7-layer reference framework describing how network systems communicate."
+  },
+  {
+    "term": "Packet",
+    "desc": "Unit data terformat yang dikirimkan melalui jaringan berbasis packet-switched.",
+    "def_en": "Formatted unit of data transmitted over a packet-switched network."
+  },
+  {
+    "term": "Packet Loss",
+    "desc": "Kondisi saat satu atau beberapa paket data gagal sampai ke tujuan dalam jaringan.",
+    "def_en": "Condition where one or more data packets fail to reach their destination across a network."
+  },
+  {
+    "term": "Packet Switching",
+    "desc": "Metode pengiriman data di mana pesan dipecah menjadi paket-paket kecil dan dikirim secara independen.",
+    "def_en": "Data transmission method breaking messages into small packets sent independently."
+  },
+  {
+    "term": "Peer-to-Peer (P2P)",
+    "desc": "Arsitektur jaringan di mana semua perangkat memiliki hak yang sama tanpa bergantung pada server pusat.",
+    "def_en": "Network architecture where all connected devices share equal privileges without a central server."
+  },
+  {
+    "term": "Physical Layer",
+    "desc": "Lapisan teratas/pertama dari model OSI yang menangani transmisi bit mentah melalui media fisik.",
+    "def_en": "First layer of the OSI model handling raw bit transmission over a physical medium."
+  },
+  {
+    "term": "PING (Packet Internet Groper)",
+    "desc": "Alat utilitas untuk menguji ketersediaan dan latency antar node dalam jaringan IP.",
+    "def_en": "Utility tool testing reachability and latency between nodes on an IP network."
+  },
+  {
+    "term": "Port",
+    "desc": "Nomor identifikasi numerik pada lapisan transport yang mengarahkan data ke aplikasi spesifik.",
+    "def_en": "Numerical transport layer endpoint directing data traffic to a specific application."
+  },
+  {
+    "term": "Protocol",
+    "desc": "Aturan dan standar yang menentukan cara perangkat berkomunikasi dan menukar data.",
+    "def_en": "Rules and standards defining how devices communicate and exchange data."
+  },
+  {
+    "term": "Proxy Server",
+    "desc": "Server perantara yang bertindak atas nama client untuk meminta sumber daya dari server lain.",
+    "def_en": "Intermediary server acting on behalf of a client to request resources from other servers."
+  },
+  {
+    "term": "Quality of Service (QoS)",
+    "desc": "Teknologi yang mengelola dan memprioritaskan jenis lalu lintas data tertentu demi menjaga kualitas performa.",
+    "def_en": "Technologies managing and prioritizing specific data traffic to guarantee performance quality."
+  },
+  {
+    "term": "Repeater",
+    "desc": "Perangkat keras yang menerima sinyal jaringan, memperkuatnya, dan memancarkannya kembali.",
+    "def_en": "Hardware device receiving a network signal, regenerating it, and retransmitting it."
+  },
+  {
+    "term": "Ring Topology",
+    "desc": "Topologi jaringan di mana setiap perangkat terhubung ke dua perangkat lain membentuk lingkaran tertutup.",
+    "def_en": "Network topology where each device connects to two adjacent devices forming a closed loop."
+  },
+  {
+    "term": "Router",
+    "desc": "Perangkat jaringan yang meneruskan paket data antar dua atau lebih jaringan yang berbeda subnet.",
+    "def_en": "Network device forwarding data packets between two or more different subnets."
+  },
+  {
+    "term": "Routing Table",
+    "desc": "Tabel basis data yang disimpan di router untuk menentukan rute terbaik ke jaringan tujuan.",
+    "def_en": "Database table stored in a router used to determine the best route to target networks."
+  },
+  {
+    "term": "Server",
+    "desc": "Komputer atau sistem yang menyediakan data, layanan, atau sumber daya ke komputer lain (client).",
+    "def_en": "Computer or system providing data, services, or resources to other computers (clients)."
+  },
+  {
+    "term": "Simplex",
+    "desc": "Mode komunikasi satu arah saja di mana data hanya bisa dikirim dari pemancar ke penerima.",
+    "def_en": "One-way communication mode where data travels strictly from transmitter to receiver."
+  },
+  {
+    "term": "SSH (Secure Shell)",
+    "desc": "Protokol jaringan terenkripsi yang digunakan untuk mengelola perangkat secara jarak jauh dengan aman.",
+    "def_en": "Encrypted network protocol used for secure remote device administration."
+  },
+  {
+    "term": "SSID (Service Set Identifier)",
+    "desc": "Nama publik yang mengidentifikasi sebuah jaringan lokal nirkabel (Wi-Fi).",
+    "def_en": "Public name identifying a specific wireless local area network (Wi-Fi)."
+  },
+  {
+    "term": "Star Topology",
+    "desc": "Topologi jaringan di mana seluruh perangkat terhubung langsung ke satu node pusat (switch/hub).",
+    "def_en": "Network topology connecting all devices directly to a central node (switch/hub)."
+  },
+  {
+    "term": "Subnet Mask",
+    "desc": "Angka 32-bit yang digunakan untuk memisahkan bagian Network ID dan Host ID pada alamat IP.",
+    "def_en": "32-bit number separating the Network ID and Host ID portions of an IP address."
+  },
+  {
+    "term": "Subnetting",
+    "desc": "Praktik membagi satu jaringan IP fisik menjadi beberapa segmen jaringan yang lebih kecil (subnet).",
+    "def_en": "Practice of dividing a physical IP network into smaller network segments (subnets)."
+  },
+  {
+    "term": "Switch",
+    "desc": "Perangkat jaringan yang menghubungkan perangkat dalam satu LAN dan meneruskan data berdasarkan alamat MAC.",
+    "def_en": "Network device connecting endpoints within a LAN, forwarding data based on MAC addresses."
+  },
+  {
+    "term": "TCP (Transmission Control Protocol)",
+    "desc": "Protokol berorientasi koneksi pada Transport Layer yang menjamin pengiriman paket data yang andal dan berurutan.",
+    "def_en": "Connection-oriented Transport Layer protocol ensuring reliable, ordered packet delivery."
+  },
+  {
+    "term": "TCP/IP Suite",
+    "desc": "Kumpulan protokol komunikasi standar yang menjadi dasar penyusun internet dan jaringan modern.",
+    "def_en": "Set of standard communication protocols forming the foundation of the internet."
+  },
+  {
+    "term": "Telnet",
+    "desc": "Protokol teks lama yang tidak terenkripsi untuk mengakses dan mengelola perangkat jarak jauh.",
+    "def_en": "Older unencrypted text-based protocol for accessing and managing remote devices."
+  },
+  {
+    "term": "Throughput",
+    "desc": "Jumlah data aktual yang berhasil dikirimkan melalui jalur komunikasi dalam periode waktu tertentu.",
+    "def_en": "Actual amount of data successfully transmitted over a communication path in a given time."
+  },
+  {
+    "term": "Topology",
+    "desc": "Pola atau tata letak hubungan fisik maupun logis antar perangkat dalam jaringan.",
+    "def_en": "Pattern or structural layout of physical/logical connections between network devices."
+  },
+  {
+    "term": "Traceroute / Tracert",
+    "desc": "Perintah utilitas untuk melacak jalur rute lompatan (hop) yang dilalui paket data menuju tujuan.",
+    "def_en": "Utility command tracking the hop-by-hop path taken by data packets to a destination."
+  },
+  {
+    "term": "UDP (User Datagram Protocol)",
+    "desc": "Protokol tanpa koneksi yang cepat pada Transport Layer tanpa jaminan pengiriman paket.",
+    "def_en": "Fast, connectionless Transport Layer protocol without packet delivery guarantees."
+  },
+  {
+    "term": "Unicast",
+    "desc": "Komunikasi satu-ke-satu di mana paket data dikirim dari satu pengirim ke satu penerima spesifik.",
+    "def_en": "One-to-one communication sending data packets from a single sender to one specific recipient."
+  },
+  {
+    "term": "Unshielded Twisted Pair (UTP)",
+    "desc": "Jenis kabel jaringan tembaga umum yang paling sering digunakan untuk instalasi LAN.",
+    "def_en": "Common copper network cable type most frequently used for LAN installations."
+  },
+  {
+    "term": "VLAN (Virtual Local Area Network)",
+    "desc": "Jaringan lokal terisolasi secara logis yang dibuat di dalam satu atau beberapa switch fisik.",
+    "def_en": "Logically isolated local network created within one or multiple physical switches."
+  },
+  {
+    "term": "VPN (Virtual Private Network)",
+    "desc": "Koneksi terenkripsi yang memungkinkan pengguna mengirim data secara aman melalui jaringan publik.",
+    "def_en": "Encrypted connection enabling secure data transmission across a public network."
+  },
+  {
+    "term": "WAN (Wide Area Network)",
+    "desc": "Jaringan komputer yang mencakup area geografis luas seperti antar kota, negara, atau benua.",
+    "def_en": "Computer network spanning a broad geographical area across cities, countries, or continents."
+  },
+  {
+    "term": "Wi-Fi",
+    "desc": "Merek dagang dan teknologi jaringan nirkabel berbasis standar IEEE 802.11.",
+    "def_en": "Trademark and wireless networking technology based on the IEEE 802.11 standards."
+  },
+  {
+    "term": "WLAN (Wireless Local Area Network)",
+    "desc": "Jaringan lokal yang menghubungkan dua atau lebih perangkat menggunakan komunikasi nirkabel.",
+    "def_en": "Local network linking two or more devices using wireless communication methods."
+  },
+  {
+    "term": "WPA / WPA2 / WPA3",
+    "desc": "Protokol keamanan dan standar enkripsi yang dirancang untuk melindungi jaringan nirkabel (Wi-Fi).",
+    "def_en": "Security protocols and encryption standards designed to protect wireless networks."
+  }
+]
