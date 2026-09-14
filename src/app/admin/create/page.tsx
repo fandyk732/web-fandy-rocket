@@ -3,6 +3,7 @@
 import LogoutButton from '@/components/LogoutButton';
 import Link from 'next/link';
 import { useState } from 'react';
+import MarkdownEditor from '@/components/MarkdownEditor';
 
 export default function CreateArticlePage() {
   const [formData, setFormData] = useState({
@@ -186,16 +187,14 @@ export default function CreateArticlePage() {
         </div>
 
         {/* Body Content */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Isi Artikel (Markdown / HTML)</label>
-          <textarea
-            rows={8}
-            value={formData.content}
-            onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-            className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm font-mono"
-            required
-          />
-        </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Isi Artikel</label>
+            {/* 2. Ganti textarea polos lo dengan ini: */}
+            <MarkdownEditor
+              value={formData.content}
+              onChange={(content) => setFormData({ ...formData, content })}
+            />
+          </div>
 
         <button
           type="submit"
