@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { Children, isValidElement, type ReactNode } from 'react';
 
 import { supabase } from '@/lib/supabase';
 import TableOfContents from '@/components/TableOfContents';
@@ -12,6 +13,10 @@ import {
   createUniqueHeadingId,
   extractText,
 } from '@/lib/headingUtils';
+
+/* =========================================================
+   ARTICLE TYPE
+========================================================= */
 
 interface Article {
   id: string;
@@ -114,6 +119,72 @@ export async function generateMetadata({
 }
 
 /* =========================================================
+   MARKDOWN IMAGE
+========================================================= */
+
+/*
+ * Image renderer dibuat sebagai component terpisah supaya
+ * paragraph renderer bisa mengenali bahwa paragraph tersebut
+ * hanya berisi sebuah image.
+ */
+
+const MarkdownImage = ({
+  src,
+  alt,
+  title,
+}: {
+  src?: string;
+  alt?: string;
+  title?: string;
+}) => {
+  if (!src) {
+    return null;
+  }
+
+  return (
+    <figure className="my-10 max-w-full">
+      <div
+        className="
+          max-w-full
+          overflow-hidden
+          rounded-2xl
+          border
+          border-border/50
+          bg-card/20
+        "
+      >
+        <img
+          src={src}
+          alt={alt || 'Gambar artikel'}
+          title={title || undefined}
+          loading="lazy"
+          className="
+            mx-auto
+            h-auto
+            max-w-full
+            object-contain
+          "
+        />
+      </div>
+
+      {title && (
+        <figcaption
+          className="
+            mt-3
+            text-center
+            text-sm
+            leading-6
+            text-muted-foreground
+          "
+        >
+          {title}
+        </figcaption>
+      )}
+    </figure>
+  );
+};
+
+/* =========================================================
    PAGE
 ========================================================= */
 
@@ -130,19 +201,9 @@ export default async function DetailArticlePage({
     notFound();
   }
 
-  /*
-   * Menyimpan ID heading yang sudah digunakan.
-   *
-   * Contoh:
-   *
-   * ## AI dan Pendidikan
-   * ## AI dan Pendidikan
-   *
-   * menjadi:
-   *
-   * #ai-dan-pendidikan
-   * #ai-dan-pendidikan-2
-   */
+  /* =======================================================
+     HEADING IDS
+  ======================================================= */
 
   const headingIds = new Map<string, number>();
 
@@ -153,17 +214,50 @@ export default async function DetailArticlePage({
   const MarkdownComponents = {
     /* -------------------------------------------------------
        PARAGRAPH
+
+       IMPORTANT:
+       ReactMarkdown dapat menghasilkan:
+
+       <p>
+         <figure>...</figure>
+       </p>
+
+       ketika Markdown image berada sebagai satu-satunya
+       isi paragraph.
+
+       HTML tidak mengizinkan figure di dalam p.
+
+       Karena itu kita cek apakah paragraph hanya berisi
+       MarkdownImage. Kalau iya, langsung return image.
     ------------------------------------------------------- */
 
     p: ({
       children,
     }: {
-      children?: React.ReactNode;
-    }) => (
-      <p className="mb-6 leading-8 text-muted-foreground">
-        {children}
-      </p>
-    ),
+      children?: ReactNode;
+    }) => {
+      const childArray = Children.toArray(children);
+
+      if (
+        childArray.length === 1 &&
+        isValidElement(childArray[0]) &&
+        childArray[0].type === MarkdownImage
+      ) {
+        return childArray[0];
+      }
+
+      return (
+        <p
+          className="
+            mb-6
+            leading-8
+            text-muted-foreground
+          "
+        >
+          {children}
+        </p>
+      );
+    },
 
     /* -------------------------------------------------------
        H2
@@ -172,7 +266,7 @@ export default async function DetailArticlePage({
     h2: ({
       children,
     }: {
-      children?: React.ReactNode;
+      children?: ReactNode;
     }) => {
       const text = extractText(children);
 
@@ -210,7 +304,7 @@ export default async function DetailArticlePage({
     h3: ({
       children,
     }: {
-      children?: React.ReactNode;
+      children?: ReactNode;
     }) => {
       const text = extractText(children);
 
@@ -226,6 +320,9 @@ export default async function DetailArticlePage({
             mt-10
             mb-4
             scroll-mt-28
+            border-l
+            border-[#D4AF37]/60
+            pl-4
             text-xl
             font-semibold
             tracking-tight
@@ -245,7 +342,7 @@ export default async function DetailArticlePage({
     strong: ({
       children,
     }: {
-      children?: React.ReactNode;
+      children?: ReactNode;
     }) => (
       <strong className="font-semibold text-foreground">
         {children}
@@ -259,7 +356,7 @@ export default async function DetailArticlePage({
     em: ({
       children,
     }: {
-      children?: React.ReactNode;
+      children?: ReactNode;
     }) => (
       <em className="italic text-foreground/90">
         {children}
@@ -268,13 +365,12 @@ export default async function DetailArticlePage({
 
     /* -------------------------------------------------------
        STRIKETHROUGH
-       Supported by remark-gfm
     ------------------------------------------------------- */
 
     del: ({
       children,
     }: {
-      children?: React.ReactNode;
+      children?: ReactNode;
     }) => (
       <del className="text-muted-foreground">
         {children}
@@ -289,7 +385,7 @@ export default async function DetailArticlePage({
       children,
       href,
     }: {
-      children?: React.ReactNode;
+      children?: ReactNode;
       href?: string;
     }) => {
       const isExternal =
@@ -307,6 +403,7 @@ export default async function DetailArticlePage({
               : undefined
           }
           className="
+            break-words
             font-medium
             text-primary
             underline
@@ -328,7 +425,7 @@ export default async function DetailArticlePage({
     ul: ({
       children,
     }: {
-      children?: React.ReactNode;
+      children?: ReactNode;
     }) => (
       <ul
         className="
@@ -350,7 +447,7 @@ export default async function DetailArticlePage({
     ol: ({
       children,
     }: {
-      children?: React.ReactNode;
+      children?: ReactNode;
     }) => (
       <ol
         className="
@@ -372,7 +469,7 @@ export default async function DetailArticlePage({
     li: ({
       children,
     }: {
-      children?: React.ReactNode;
+      children?: ReactNode;
     }) => (
       <li className="pl-1 leading-7">
         {children}
@@ -381,9 +478,6 @@ export default async function DetailArticlePage({
 
     /* -------------------------------------------------------
        CHECKBOX
-       remark-gfm generates input elements for:
-       - [ ] Task
-       - [x] Done
     ------------------------------------------------------- */
 
     input: ({
@@ -423,14 +517,14 @@ export default async function DetailArticlePage({
     blockquote: ({
       children,
     }: {
-      children?: React.ReactNode;
+      children?: ReactNode;
     }) => (
       <blockquote
         className="
           my-8
+          rounded-r-xl
           border-l-4
           border-primary/60
-          rounded-r-xl
           bg-card/40
           px-6
           py-5
@@ -450,76 +544,27 @@ export default async function DetailArticlePage({
        ![Alt text](image-url "Caption")
     ------------------------------------------------------- */
 
-    img: ({
-      src,
-      alt,
-      title,
-    }: {
-      src?: string;
-      alt?: string;
-      title?: string;
-    }) => {
-      if (!src) {
-        return null;
-      }
-
-      return (
-        <figure className="my-10">
-          <div
-            className="
-              overflow-hidden
-              rounded-2xl
-              border
-              border-border/50
-              bg-card/20
-            "
-          >
-            <img
-              src={src}
-              alt={
-                alt || 'Gambar artikel'
-              }
-              title={
-                title || undefined
-              }
-              loading="lazy"
-              className="
-                mx-auto
-                h-auto
-                w-full
-                object-contain
-              "
-            />
-          </div>
-
-          {title && (
-            <figcaption
-              className="
-                mt-3
-                text-center
-                text-sm
-                leading-6
-                text-muted-foreground
-              "
-            >
-              {title}
-            </figcaption>
-          )}
-        </figure>
-      );
-    },
+    img: MarkdownImage,
 
     /* -------------------------------------------------------
        TABLE
-       Supported by remark-gfm
     ------------------------------------------------------- */
 
     table: ({
       children,
     }: {
-      children?: React.ReactNode;
+      children?: ReactNode;
     }) => (
-      <div className="my-8 overflow-x-auto rounded-xl border border-border/60">
+      <div
+        className="
+          my-8
+          max-w-full
+          overflow-x-auto
+          rounded-xl
+          border
+          border-border/60
+        "
+      >
         <table className="w-full border-collapse text-sm">
           {children}
         </table>
@@ -533,7 +578,7 @@ export default async function DetailArticlePage({
     thead: ({
       children,
     }: {
-      children?: React.ReactNode;
+      children?: ReactNode;
     }) => (
       <thead className="bg-card/60">
         {children}
@@ -547,7 +592,7 @@ export default async function DetailArticlePage({
     tbody: ({
       children,
     }: {
-      children?: React.ReactNode;
+      children?: ReactNode;
     }) => (
       <tbody>
         {children}
@@ -561,7 +606,7 @@ export default async function DetailArticlePage({
     tr: ({
       children,
     }: {
-      children?: React.ReactNode;
+      children?: ReactNode;
     }) => (
       <tr className="border-b border-border/50 last:border-0">
         {children}
@@ -575,7 +620,7 @@ export default async function DetailArticlePage({
     th: ({
       children,
     }: {
-      children?: React.ReactNode;
+      children?: ReactNode;
     }) => (
       <th
         className="
@@ -597,7 +642,7 @@ export default async function DetailArticlePage({
     td: ({
       children,
     }: {
-      children?: React.ReactNode;
+      children?: ReactNode;
     }) => (
       <td
         className="
@@ -626,7 +671,7 @@ export default async function DetailArticlePage({
     code: ({
       children,
     }: {
-      children?: React.ReactNode;
+      children?: ReactNode;
     }) => (
       <code
         className="
@@ -650,11 +695,12 @@ export default async function DetailArticlePage({
     pre: ({
       children,
     }: {
-      children?: React.ReactNode;
+      children?: ReactNode;
     }) => (
       <pre
         className="
           my-8
+          max-w-full
           overflow-x-auto
           rounded-2xl
           border
@@ -715,7 +761,6 @@ export default async function DetailArticlePage({
           md:pt-24
         "
       >
-
         {/* Back */}
 
         <Link
@@ -750,7 +795,6 @@ export default async function DetailArticlePage({
             text-muted-foreground
           "
         >
-
           {article.category && (
             <span className="text-primary">
               {article.category}
@@ -778,7 +822,6 @@ export default async function DetailArticlePage({
               </span>
             </>
           )}
-
         </div>
 
         {/* Title */}
@@ -813,7 +856,6 @@ export default async function DetailArticlePage({
             {article.excerpt}
           </p>
         )}
-
       </header>
 
       {/* =================================================
@@ -829,7 +871,6 @@ export default async function DetailArticlePage({
             px-6
           "
         >
-
           <div
             className="
               relative
@@ -839,7 +880,6 @@ export default async function DetailArticlePage({
               border-border/50
             "
           >
-
             {/* Blurred Background */}
 
             <div
@@ -854,8 +894,7 @@ export default async function DetailArticlePage({
                 backgroundImage:
                   `url(${article.cover_image})`,
                 backgroundSize: 'cover',
-                backgroundPosition:
-                  'center',
+                backgroundPosition: 'center',
               }}
             />
 
@@ -882,7 +921,6 @@ export default async function DetailArticlePage({
                 "
               />
             </div>
-
           </div>
 
           {/* Cover Image Credit */}
@@ -899,7 +937,6 @@ export default async function DetailArticlePage({
               {article.cover_image_credit}
             </p>
           )}
-
         </div>
       )}
 
@@ -944,6 +981,7 @@ export default async function DetailArticlePage({
 
         <article
           className="
+            min-w-0
             prose
             prose-invert
             max-w-none
@@ -951,7 +989,6 @@ export default async function DetailArticlePage({
             leading-8
           "
         >
-
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={MarkdownComponents}
@@ -968,6 +1005,7 @@ export default async function DetailArticlePage({
               className="
                 my-12
                 aspect-video
+                max-w-full
                 overflow-hidden
                 rounded-2xl
                 border
@@ -991,7 +1029,6 @@ export default async function DetailArticlePage({
               />
             </div>
           )}
-
         </article>
 
         {/* =================================================
@@ -1005,7 +1042,6 @@ export default async function DetailArticlePage({
             />
           </div>
         </aside>
-
       </div>
 
       {/* =================================================
@@ -1022,7 +1058,6 @@ export default async function DetailArticlePage({
       >
         <GiscusComments />
       </div>
-
     </main>
   );
 }
