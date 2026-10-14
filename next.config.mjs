@@ -7,17 +7,9 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // 💡 Taruh turbopack: {} di root level, BUKAN di dalam experimental
-  turbopack: {},
   images: {
     remotePatterns: [
       ...imageHosts,
-      {
-        protocol: 'https',
-        hostname: 'ik.imagekit.io',
-        port: '',
-        pathname: '/**',
-      },
     ],
     minimumCacheTTL: 60,
     qualities: [75, 85, 100],

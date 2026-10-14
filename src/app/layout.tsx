@@ -4,21 +4,20 @@ import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import '../styles/tailwind.css';
 import BackToTop from '@/components/BackToTop';
 import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer'; // <-- Import Footer (sesuaikan path jika berbeda)
+import Footer from '@/components/Footer';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import './globals.css';
 import CommandPalette from '@/components/CommandPalette';
 
+// 💡 Menggunakan konfigurasi Variable Font standar (tanpa array weight manual)
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
   variable: '--font-plus-jakarta-sans',
   display: 'swap',
 });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
   variable: '--font-jetbrains-mono',
   display: 'swap',
 });
@@ -33,7 +32,7 @@ export const metadata: Metadata = {
   title: 'Fandy Aziz — Educator, Builder & Digital Explorer',
   description: 'Personal portfolio of Fandy Aziz showcasing education, web development, digital transformation, and vocational innovation from East Java, Indonesia.',
   verification: {
-    google: 'google-site-verification=aFwjWKDVbOw1HtrmLP21uCMO1UIXLR0A2UJYqPqSMYw'
+    google: 'google-site-verification=aFwjWKDVbOw1HtrmLP21uCMO1UIXLR0A2UJYqPqSMYw',
   },
   icons: {
     icon: [{ url: '/favicon.ico', type: 'image/x-icon' }],
@@ -72,9 +71,7 @@ export default function RootLayout({
         <ThemeProvider>
           <div className="flex flex-col min-h-screen">
             <Navbar />
-            <main className="flex-1">
-              {children}
-            </main>
+            <main className="flex-1">{children}</main>
             <Footer />
           </div>
           <BackToTop />
