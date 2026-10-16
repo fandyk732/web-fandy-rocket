@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import MateriSection from '@/components/MateriSection';
 
 // 🔗 WEB APP URL APPS SCRIPT
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzl-dJ67vYAGtuA13tUodzNiMbes9G8F0UXAp9lgGUSd-Bn3u1p16n02APn5orJDdAI/exec';
@@ -178,69 +179,68 @@ export default function AbsensiPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-6 pt-28 pb-16 space-y-12">
-      {/* Header Banner */}
-      <div className="text-center space-y-4">
-        <span className="text-xs font-mono tracking-wider uppercase px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
-          Mata Kuliah Filsafat Pendidikan Islam
+    <div className="max-w-4xl mx-auto px-6 pt-28 pb-16 space-y-8">
+  {/* Header Banner */}
+  <div className="text-center space-y-3">
+    <span className="text-xs font-mono tracking-wider uppercase px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 inline-block">
+      Mata Kuliah Filsafat Pendidikan Islam
+    </span>
+    
+    <h1 className="text-3xl md:text-4xl font-bold">Absensi Perkuliahan</h1>
+    
+    <p className="text-sm text-muted-foreground max-w-md mx-auto">
+      Dosen Pengampu - R. Ahmad Nur Kholis, M.Pd
+    </p>
+
+    {/*  Combined Container: Google Meet + Status Absensi */}
+    <div className="max-w-md mx-auto w-full flex flex-col gap-2.5 pt-2">
+      {/* 🎥 Banner Google Meet Perkuliahan */}
+      <a
+        href="https://meet.google.com/dwi-bweq-gqw"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-transparent border border-emerald-500/30 hover:border-emerald-500/60 transition-all group shadow-sm"
+      >
+        <div className="flex items-center gap-3 text-left">
+          <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-500 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition-transform">
+            📹
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-foreground group-hover:text-emerald-500 transition-colors">
+              Link Perkuliahan Online (Google Meet)
+            </p>
+            <p className="text-[11px] font-mono text-muted-foreground">
+              meet.google.com/dwi-bweq-gqw
+            </p>
+          </div>
+        </div>
+        <span className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-emerald-500 text-black group-hover:bg-emerald-400 transition-colors shrink-0">
+          Join Class
         </span>
-        
-        <h1 className="text-3xl md:text-4xl font-bold">Absensi Perkuliahan</h1>
-        
-        <p className="text-sm text-muted-foreground max-w-md mx-auto">
-          Dosen Pengampu - R. Ahmad Nur Kholis, M.Pd
-        </p>
+      </a>
 
-        {/* Status Jam Absensi */}
-        <div>
-          <div className="inline-block px-4 py-2 rounded-xl text-xs font-medium border border-border bg-card shadow-sm">
-            {timeMessage}
-          </div>
-        </div>
-
-        {/* 🎥 Banner Google Meet Perkuliahan */}
-        <div className="max-w-md mx-auto pt-2">
-          <a
-            href="https://meet.google.com/dwi-bweq-gqw"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-transparent border border-emerald-500/30 hover:border-emerald-500/60 transition-all group shadow-sm"
-          >
-            <div className="flex items-center gap-3 text-left">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-500 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition-transform">
-                📹
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-foreground group-hover:text-emerald-500 transition-colors">
-                  Link Perkuliahan Online (Google Meet)
-                </p>
-                <p className="text-[11px] font-mono text-muted-foreground">
-                  meet.google.com/dwi-bweq-gqw
-                </p>
-              </div>
-            </div>
-            <span className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-emerald-500 text-black group-hover:bg-emerald-400 transition-colors shrink-0">
-              Join Class
-            </span>
-          </a>
-        </div>
+      {/*  Status Jam Absensi (Mepet Presisi dengan Banner Meet) */}
+      <div className="w-full text-center px-4 py-2.5 rounded-xl text-xs font-medium border border-border bg-card shadow-sm">
+        {timeMessage}
       </div>
+    </div>
+  </div>
 
-      {/* Form Absensi Mahasiswa */}
-      <div className="p-6 md:p-8 rounded-2xl bg-card border border-border shadow-sm space-y-6">
-        <h2 className="text-xl font-bold border-l-4 border-primary pl-3">Form Kehadiran Mahasiswa</h2>
+  {/*  Form Absensi Mahasiswa */}
+  <div className="p-6 md:p-8 rounded-2xl bg-card border border-border shadow-sm space-y-6">
+    <h2 className="text-xl font-bold border-l-4 border-primary pl-3">Form Kehadiran Mahasiswa</h2>
 
-        {feedback.msg && (
-          <div
-            className={`p-4 rounded-xl text-sm font-medium border ${
-              feedback.type === 'success'
-                ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-                : 'bg-rose-500/10 text-rose-500 border-rose-500/20'
-            }`}
-          >
-            {feedback.msg}
-          </div>
-        )}
+    {feedback.msg && (
+      <div
+        className={`p-4 rounded-xl text-sm font-medium border ${
+          feedback.type === 'success'
+            ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+            : 'bg-rose-500/10 text-rose-500 border-rose-500/20'
+        }`}
+      >
+        {feedback.msg}
+      </div>
+    )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">
@@ -308,6 +308,9 @@ export default function AbsensiPage() {
           </button>
         </form>
       </div>
+
+      {/*  Materi Perkuliahan (Google Drive) */}
+      <MateriSection />
 
       {/* Area Rekap untuk Dosen & Ketua Kelas */}
       <div className="p-6 md:p-8 rounded-2xl bg-card border border-border shadow-sm space-y-6">
