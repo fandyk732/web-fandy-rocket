@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { FileText, Download, ExternalLink, Loader2, RefreshCw } from 'lucide-react';
+import { FileText, Download, Loader2, RefreshCw } from 'lucide-react';
 
 interface DriveFile {
   id: string;
@@ -32,7 +32,7 @@ export default function MateriSection() {
     setError(null);
 
     try {
-      // Query untuk mengambil file di dalam folder publik drive
+      // Query untuk mengambil file publik dari Google Drive
       const query = encodeURIComponent(`'${folderId}' in parents and trashed = false`);
       const fields = encodeURIComponent('files(id, name, mimeType, size, createdTime, webViewLink, webContentLink)');
       const url = `https://www.googleapis.com/drive/v3/files?q=${query}&fields=${fields}&orderBy=createdTime%20desc&key=${apiKey}`;
@@ -78,12 +78,12 @@ export default function MateriSection() {
   };
 
   return (
-    <div className="p-6 md:p-8 rounded-2xl bg-card border border-border shadow-sm space-y-4">
+    <div className="p-5 md:p-8 rounded-2xl bg-card border border-border shadow-sm space-y-4">
       {/* Header Section */}
       <div className="flex items-center justify-between border-l-4 border-primary pl-3">
         <div>
-          <h2 className="text-xl font-bold text-foreground">Materi & Modul Perkuliahan</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <h2 className="text-lg md:text-xl font-bold text-foreground">Materi & Modul Perkuliahan</h2>
+          <p className="text-[11px] md:text-xs text-muted-foreground mt-0.5">
             Diunggah langsung oleh Dosen Pengampu
           </p>
         </div>
@@ -117,50 +117,54 @@ export default function MateriSection() {
           </p>
         </div>
       ) : (
-        /* Grid List File PDF / Materi */
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
-          {files.map((file) => {
-            const isPdf = file.mimeType.includes('pdf');
-            const downloadUrl = file.webContentLink || file.webViewLink || '#';
+        /* Container List File dengan Scrollbar & Max Height agar tidak makan tempat */
+        <div className="max-h-[360px] md:max-h-[420px] overflow-y-auto pr-1 space-y-2.5 pt-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {files.map((file) => {
+              const isPdf = file.mimeType.includes('pdf');
+              const downloadUrl = file.webContentLink || file.webViewLink || '#';
 
-            return (
-              <div
-                key={file.id}
-                className="p-4 rounded-xl border border-border bg-background/50 hover:border-primary/50 transition-all flex items-center justify-between group"
-              >
-                <div className="flex items-center gap-3 overflow-hidden">
-                  <div
-                    className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 group-hover:scale-105 transition-transform ${
-                      isPdf
-                        ? 'bg-rose-500/10 text-rose-500'
-                        : 'bg-blue-500/10 text-blue-500'
-                    }`}
-                  >
-                    {isPdf ? 'PDF' : 'DOC'}
-                  </div>
-
-                  <div className="truncate">
-                    <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary transition-colors">
-                      {file.name}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
-                      {formatFileSize(file.size)} • {formatDate(file.createdTime)}
-                    </p>
-                  </div>
-                </div>
-
-                <a
-                  href={downloadUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary text-primary hover:text-black text-xs font-bold transition-all shrink-0 ml-2 flex items-center gap-1.5"
+              return (
+                <div
+                  key={file.id}
+                  className="p-3.5 rounded-xl border border-border bg-background/50 hover:border-primary/50 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 group"
                 >
-                  <Download size={13} />
-                  <span>Download</span>
-                </a>
-              </div>
-            );
-          })}
+                  <div className="flex items-start gap-3 w-full sm:w-auto overflow-hidden">
+                    <div
+                      className={`w-9 h-9 rounded-lg flex items-center justify-center font-bold text-[11px] shrink-0 group-hover:scale-105 transition-transform ${
+                        isPdf
+                          ? 'bg-rose-500/10 text-rose-500'
+                          : 'bg-blue-500/10 text-blue-500'
+                      }`}
+                    >
+                      {isPdf ? 'PDF' : 'DOC'}
+                    </div>
+
+                    {/* Nama file bisa sampai 2 baris (line-clamp-2) & tidak terpotong konyol */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-foreground leading-snug line-clamp-2 group-hover:text-primary transition-colors break-words">
+                        {file.name}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground mt-1">
+                        {formatFileSize(file.size)} • {formatDate(file.createdTime)}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Tombol Download di Mobile menyesuaikan lebar */}
+                  <a
+                    href={downloadUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto px-3 py-2 sm:py-1.5 rounded-lg bg-primary/10 hover:bg-primary text-primary hover:text-black text-xs font-bold transition-all shrink-0 flex items-center justify-center gap-1.5"
+                  >
+                    <Download size={13} />
+                    <span>Download</span>
+                  </a>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>

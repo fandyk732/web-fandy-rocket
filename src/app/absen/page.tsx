@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import MateriSection from '@/components/MateriSection';
+import { RefreshCw } from 'lucide-react';
 
 // 🔗 WEB APP URL APPS SCRIPT
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzl-dJ67vYAGtuA13tUodzNiMbes9G8F0UXAp9lgGUSd-Bn3u1p16n02APn5orJDdAI/exec';
@@ -20,8 +21,11 @@ export default function AbsensiPage() {
   const [status, setStatus] = useState('Hadir');
   const [catatan, setCatatan] = useState('');
 
+  // Status Sesi Absensi dari Google Apps Script (Toggle Admin)
   const [isOpen, setIsOpen] = useState(false);
-  const [timeMessage, setTimeMessage] = useState('');
+  const [timeMessage, setTimeMessage] = useState('Memeriksa status sesi absensi...');
+  const [checkingStatus, setCheckingStatus] = useState(true);
+
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState({ type: '', msg: '' });
 
@@ -32,39 +36,37 @@ export default function AbsensiPage() {
   const [selectedStatus, setSelectedStatus] = useState('ALL'); // ALL, Hadir, Izin, Sakit
   const [loadingRekap, setLoadingRekap] = useState(false);
 
-  // 1. Cek Ketersediaan Jam Absen (Sabtu 16:00 - 17:20 WIB)
-  const checkTimeSlot = () => {
-    const now = new Date();
-    // Gunakan Intl.DateTimeFormat agar waktu pengguna (laptop/hp) selalu dikonversi ke WIB
-    const wibTimeString = now.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' });
-    const wibDate = new Date(wibTimeString);
+  // 1. Fetch Status Absensi Real-time dari Apps Script (Sheet Config)
+  const fetchAbsensiStatus = async () => {
+    setCheckingStatus(true);
+    try {
+      const res = await fetch(`${APPS_SCRIPT_URL}?action=getStatus`);
+      const json = await res.json();
 
-    const day = wibDate.getDay();       // 6 = Sabtu
-    const hours = wibDate.getHours();   // 16 = Jam 4 Sore, 17 = Jam 5 Sore
-    const minutes = wibDate.getMinutes();
-
-    const isSaturday = (day === 6);
-    const isWithinTimeWindow = 
-      (hours === 16 && minutes >= 0) || 
-      (hours === 17 && minutes <= 20);
-
-    if (isSaturday && isWithinTimeWindow) {
-      setIsOpen(true);
-      setTimeMessage('🟢 Absensi Sedang Dibuka (Sabtu 16:00 - 17:20 WIB)');
-    } else {
+      if (json.success && json.status === 'BUKA') {
+        setIsOpen(true);
+        setTimeMessage('🟢 Absensi Sedang Dibuka oleh Dosen');
+      } else {
+        setIsOpen(false);
+        setTimeMessage('🔴 Absensi Ditutup. Silakan tunggu hingga sesi dibuka oleh dosen.');
+      }
+    } catch (err) {
+      console.error('Gagal mengambil status absensi:', err);
       setIsOpen(false);
-      setTimeMessage('🔴 Absensi Ditutup. Hanya dibuka tiap hari Sabtu pukul 16:00 - 17:20 WIB.');
+      setTimeMessage('🔴 Gagal terhubung ke server absensi.');
+    } finally {
+      setCheckingStatus(false);
     }
   };
 
-  // Fetch Rekap Data
+  // 2. Fetch Rekap Data Absensi
   const fetchRekap = async () => {
     setLoadingRekap(true);
     try {
       const res = await fetch(APPS_SCRIPT_URL);
       const json = await res.json();
       if (json.success) {
-        setRekapList(json.data);
+        setRekapList(json.data || []);
       }
     } catch (err) {
       console.error('Gagal mengambil rekap:', err);
@@ -74,15 +76,19 @@ export default function AbsensiPage() {
   };
 
   useEffect(() => {
-    checkTimeSlot();
-    const timer = setInterval(checkTimeSlot, 10000); // Check status tiap 10 detik
+    fetchAbsensiStatus();
     fetchRekap();
+
+    // Polling status absensi setiap 15 detik
+    const timer = setInterval(fetchAbsensiStatus, 15000);
     return () => clearInterval(timer);
   }, []);
 
-  // Submit Absen
+  // Submit Absen Mahasiswa
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isOpen) return;
+
     setLoading(true);
     setFeedback({ type: '', msg: '' });
 
@@ -108,7 +114,7 @@ export default function AbsensiPage() {
         setNim('');
         setNama('');
         setCatatan('');
-        fetchRekap();
+        fetchRekap(); // Auto-refresh tabel rekap setelah mahasiswa absen
       } else {
         setFeedback({ type: 'error', msg: `❌ ${result.message}` });
       }
@@ -155,7 +161,7 @@ export default function AbsensiPage() {
   // Ambil 50 data teratas untuk tampilan UI
   const displayRekap = sortedFilteredData.slice(0, 50);
 
-  // Download Laporan ke Excel/CSV Sesuai Hasil Filter
+  // Download Laporan ke Excel/CSV
   const handleDownloadCSV = () => {
     if (sortedFilteredData.length === 0) {
       return alert('Tidak ada data presensi yang sesuai dengan filter!');
@@ -180,67 +186,87 @@ export default function AbsensiPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-6 pt-28 pb-16 space-y-8">
-  {/* Header Banner */}
-  <div className="text-center space-y-3">
-    <span className="text-xs font-mono tracking-wider uppercase px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 inline-block">
-      Mata Kuliah Filsafat Pendidikan Islam
-    </span>
-    
-    <h1 className="text-3xl md:text-4xl font-bold">Absensi Perkuliahan</h1>
-    
-    <p className="text-sm text-muted-foreground max-w-md mx-auto">
-      Dosen Pengampu - R. Ahmad Nur Kholis, M.Pd
-    </p>
+      {/* Header Banner */}
+      <div className="text-center space-y-3">
+        <span className="text-xs font-mono tracking-wider uppercase px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 inline-block">
+          Mata Kuliah Filsafat Pendidikan Islam
+        </span>
 
-    {/*  Combined Container: Google Meet + Status Absensi */}
-    <div className="max-w-md mx-auto w-full flex flex-col gap-2.5 pt-2">
-      {/* 🎥 Banner Google Meet Perkuliahan */}
-      <a
-        href="https://meet.google.com/dwi-bweq-gqw"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-transparent border border-emerald-500/30 hover:border-emerald-500/60 transition-all group shadow-sm"
-      >
-        <div className="flex items-center gap-3 text-left">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-500 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition-transform">
-            📹
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-foreground group-hover:text-emerald-500 transition-colors">
-              Link Perkuliahan Online (Google Meet)
-            </p>
-            <p className="text-[11px] font-mono text-muted-foreground">
-              meet.google.com/dwi-bweq-gqw
-            </p>
+        <h1 className="text-3xl md:text-4xl font-bold">Absensi Perkuliahan</h1>
+
+        <p className="text-sm text-muted-foreground max-w-md mx-auto">
+          Dosen Pengampu - R. Ahmad Nur Kholis, M.Pd
+        </p>
+
+        {/* Combined Container: Google Meet + Status Absensi */}
+        <div className="max-w-md mx-auto w-full flex flex-col gap-2.5 pt-2">
+          {/* 🎥 Banner Google Meet Perkuliahan */}
+          <a
+            href="https://meet.google.com/dwi-bweq-gqw"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-transparent border border-emerald-500/30 hover:border-emerald-500/60 transition-all group shadow-sm"
+          >
+            <div className="flex items-center gap-3 text-left">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-500 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition-transform">
+                📹
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-foreground group-hover:text-emerald-500 transition-colors">
+                  Link Perkuliahan Online (Google Meet)
+                </p>
+                <p className="text-[11px] font-mono text-muted-foreground">
+                  meet.google.com/dwi-bweq-gqw
+                </p>
+              </div>
+            </div>
+            <span className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-emerald-500 text-black group-hover:bg-emerald-400 transition-colors shrink-0">
+              Join Class
+            </span>
+          </a>
+
+          {/* Status Sesi Absensi + Tombol Refresh Sesi */}
+          <div className="flex items-center gap-2">
+            <div
+              className={`flex-1 text-center px-4 py-2.5 rounded-xl text-xs font-medium border shadow-sm transition-all ${
+                checkingStatus
+                  ? 'bg-card border-border text-muted-foreground'
+                  : isOpen
+                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500 font-semibold'
+                  : 'bg-rose-500/10 border-rose-500/30 text-rose-500 font-semibold'
+              }`}
+            >
+              {timeMessage}
+            </div>
+
+            <button
+              type="button"
+              onClick={fetchAbsensiStatus}
+              disabled={checkingStatus}
+              title="Cek Ulang Status Sesi"
+              className="p-2.5 rounded-xl bg-card border border-border text-muted-foreground hover:text-foreground hover:bg-accent transition-all disabled:opacity-50 shrink-0"
+            >
+              <RefreshCw size={14} className={checkingStatus ? 'animate-spin' : ''} />
+            </button>
           </div>
         </div>
-        <span className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-emerald-500 text-black group-hover:bg-emerald-400 transition-colors shrink-0">
-          Join Class
-        </span>
-      </a>
-
-      {/*  Status Jam Absensi (Mepet Presisi dengan Banner Meet) */}
-      <div className="w-full text-center px-4 py-2.5 rounded-xl text-xs font-medium border border-border bg-card shadow-sm">
-        {timeMessage}
       </div>
-    </div>
-  </div>
 
-  {/*  Form Absensi Mahasiswa */}
-  <div className="p-6 md:p-8 rounded-2xl bg-card border border-border shadow-sm space-y-6">
-    <h2 className="text-xl font-bold border-l-4 border-primary pl-3">Form Kehadiran Mahasiswa</h2>
+      {/* Form Absensi Mahasiswa */}
+      <div className="p-6 md:p-8 rounded-2xl bg-card border border-border shadow-sm space-y-6">
+        <h2 className="text-xl font-bold border-l-4 border-primary pl-3">Form Kehadiran Mahasiswa</h2>
 
-    {feedback.msg && (
-      <div
-        className={`p-4 rounded-xl text-sm font-medium border ${
-          feedback.type === 'success'
-            ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-            : 'bg-rose-500/10 text-rose-500 border-rose-500/20'
-        }`}
-      >
-        {feedback.msg}
-      </div>
-    )}
+        {feedback.msg && (
+          <div
+            className={`p-4 rounded-xl text-sm font-medium border ${
+              feedback.type === 'success'
+                ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+                : 'bg-rose-500/10 text-rose-500 border-rose-500/20'
+            }`}
+          >
+            {feedback.msg}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">
@@ -251,7 +277,7 @@ export default function AbsensiPage() {
                 value={nim}
                 onChange={(e) => setNim(e.target.value)}
                 placeholder="Contoh: 20252010573"
-                className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-sm focus:outline-none focus:border-primary"
+                className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-sm focus:outline-none focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 required
                 disabled={!isOpen || loading}
               />
@@ -264,7 +290,7 @@ export default function AbsensiPage() {
                 value={nama}
                 onChange={(e) => setNama(e.target.value)}
                 placeholder="Nama sesuai SIAKAD"
-                className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-sm focus:outline-none focus:border-primary"
+                className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-sm focus:outline-none focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 required
                 disabled={!isOpen || loading}
               />
@@ -277,7 +303,7 @@ export default function AbsensiPage() {
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-sm focus:outline-none focus:border-primary"
+                className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-sm focus:outline-none focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={!isOpen || loading}
               >
                 <option value="Hadir">Hadir</option>
@@ -293,7 +319,7 @@ export default function AbsensiPage() {
                 value={catatan}
                 onChange={(e) => setCatatan(e.target.value)}
                 placeholder="Opsional (misal: alasan izin)"
-                className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-sm focus:outline-none focus:border-primary"
+                className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-sm focus:outline-none focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={!isOpen || loading}
               />
             </div>
@@ -309,29 +335,44 @@ export default function AbsensiPage() {
         </form>
       </div>
 
-      {/*  Materi Perkuliahan (Google Drive) */}
+      {/* Materi Perkuliahan (Google Drive) */}
       <MateriSection />
 
       {/* Area Rekap untuk Dosen & Ketua Kelas */}
       <div className="p-6 md:p-8 rounded-2xl bg-card border border-border shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
-          <div>
-            <h2 className="text-xl font-bold border-l-4 border-amber-500 pl-3">Rekapitulasi Presensi (Dosen Area)</h2>
-            <p className="text-xs text-muted-foreground mt-1">Laporan data kehadiran yang masuk secara real-time.</p>
+          <div className="flex items-center gap-3">
+            <div>
+              <h2 className="text-xl font-bold border-l-4 border-amber-500 pl-3">Rekapitulasi Presensi (Dosen Area)</h2>
+              <p className="text-xs text-muted-foreground mt-1">Laporan data kehadiran yang masuk secara real-time.</p>
+            </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleDownloadCSV}
-            className="px-4 py-2 text-xs font-semibold bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-xl transition-colors flex items-center justify-center gap-2"
-          >
-            📥 Download Excel/CSV ({sortedFilteredData.length} Data)
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Tombol Refresh Data Rekap */}
+            <button
+              type="button"
+              onClick={fetchRekap}
+              disabled={loadingRekap}
+              title="Refresh Data Tabel"
+              className="p-2 text-muted-foreground hover:text-foreground rounded-xl border border-border hover:bg-accent transition-all disabled:opacity-50"
+            >
+              <RefreshCw size={14} className={loadingRekap ? 'animate-spin' : ''} />
+            </button>
+
+            {/* Tombol Download CSV */}
+            <button
+              type="button"
+              onClick={handleDownloadCSV}
+              className="px-4 py-2 text-xs font-semibold bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-xl transition-colors flex items-center justify-center gap-2"
+            >
+              📥 Download Excel/CSV ({sortedFilteredData.length} Data)
+            </button>
+          </div>
         </div>
 
         {/* Control Bar Filter Advanced */}
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
-          {/* Input Search Nama/NIM */}
           <div className="sm:col-span-5">
             <input
               type="text"
@@ -342,7 +383,6 @@ export default function AbsensiPage() {
             />
           </div>
 
-          {/* Filter Tanggal */}
           <div className="sm:col-span-4">
             <input
               type="date"
@@ -352,7 +392,6 @@ export default function AbsensiPage() {
             />
           </div>
 
-          {/* Filter Status */}
           <div className="sm:col-span-3">
             <select
               value={selectedStatus}
