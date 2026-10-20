@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { PDFDocument } from 'pdf-lib';
 
-// 🔗 WEB APP URL APPS SCRIPT KRS LO
 const APPS_SCRIPT_KRS_URL =
   'https://script.google.com/macros/s/AKfycbzBNbR1Mem-KxaMSSnvA2Lt55fMQuWyDoQWQokut_LiIzFiXKtOqlKnC5HnLasq6lR1Bg/exec';
 
@@ -11,6 +10,7 @@ type KrsData = {
   timestamp: string;
   nim: string;
   nama: string;
+  jenisDokumen: string;
   fileName: string;
   fileUrl: string;
   fileId: string;
@@ -19,6 +19,7 @@ type KrsData = {
 export default function KrsUploadPage() {
   const [nim, setNim] = useState('');
   const [nama, setNama] = useState('');
+  const [jenisDokumen, setJenisDokumen] = useState<'KRS' | 'KHS'>('KRS');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const [loadingUpload, setLoadingUpload] = useState(false);
@@ -28,8 +29,9 @@ export default function KrsUploadPage() {
 
   const [krsList, setKrsList] = useState<KrsData[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState<'ALL' | 'KRS' | 'KHS'>('ALL');
 
-  // Fetch Rekap Data KRS
+  // Fetch Rekap Data KRS/KHS
   const fetchKrsList = async () => {
     setLoadingRekap(true);
     try {
@@ -39,7 +41,7 @@ export default function KrsUploadPage() {
         setKrsList(json.data);
       }
     } catch (err) {
-      console.error('Gagal mengambil data KRS:', err);
+      console.error('Gagal mengambil data:', err);
     } finally {
       setLoadingRekap(false);
     }
@@ -75,7 +77,6 @@ export default function KrsUploadPage() {
     setSelectedFile(file);
   };
 
-  // Convert File to Base64 String
   const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -85,11 +86,11 @@ export default function KrsUploadPage() {
     });
   };
 
-  // Submit Upload KRS
+  // Submit Upload
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedFile) {
-      return alert('Silakan pilih file PDF KRS terlebih dahulu!');
+      return alert('Silakan pilih file PDF terlebih dahulu!');
     }
 
     setLoadingUpload(true);
@@ -98,13 +99,14 @@ export default function KrsUploadPage() {
     try {
       const cleanNama = nama.trim().replace(/[/\\?%*:|"<>]/g, '');
       const cleanNim = nim.trim();
-      const customFileName = `KRS_${cleanNama}_${cleanNim}.pdf`;
+      const customFileName = `${jenisDokumen}_${cleanNama}_${cleanNim}.pdf`;
 
       const base64Data = await fileToBase64(selectedFile);
 
       const payload = {
         nim: cleanNim,
         nama: nama.trim(),
+        jenisDokumen: jenisDokumen,
         fileName: customFileName,
         fileData: base64Data,
       };
@@ -120,7 +122,10 @@ export default function KrsUploadPage() {
       const result = await response.json();
 
       if (result.success) {
-        setFeedback({ type: 'success', msg: '✅ File KRS berhasil diupload!' });
+        setFeedback({
+          type: 'success',
+          msg: `✅ File ${jenisDokumen} berhasil diupload!`,
+        });
         setNim('');
         setNama('');
         setSelectedFile(null);
@@ -139,18 +144,32 @@ export default function KrsUploadPage() {
     }
   };
 
-  // Merge Semua PDF via Apps Script Proxy (100% Bebas CORS)
+  // Filter Data untuk Tabel
+  const filteredKrs = krsList.filter((item) => {
+    const matchesSearch =
+      item.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.nim.includes(searchTerm) ||
+      item.fileName.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesType =
+      filterType === 'ALL' || item.jenisDokumen === filterType;
+
+    return matchesSearch && matchesType;
+  });
+
+  const sortedKrs = [...filteredKrs].reverse();
+
+  // Merge Semua PDF Sesuai Filter Terpilih
   const handleMergeAllPdf = async () => {
-    if (krsList.length === 0) {
-      return alert('Belum ada file KRS yang diupload untuk digabungkan!');
+    if (sortedKrs.length === 0) {
+      return alert('Belum ada file yang diupload untuk digabungkan!');
     }
 
     setLoadingMerge(true);
     try {
       const mergedPdf = await PDFDocument.create();
 
-      for (const item of krsList) {
-        // Fetch Base64 PDF dari Apps Script backend
+      for (const item of sortedKrs) {
         const res = await fetch(
           `${APPS_SCRIPT_KRS_URL}?action=getFile&fileId=${item.fileId}`
         );
@@ -160,7 +179,6 @@ export default function KrsUploadPage() {
           throw new Error(`Gagal mengambil file ${item.fileName}`);
         }
 
-        // Decode Base64 ke ArrayBuffer
         const binaryString = atob(json.base64);
         const bytes = new Uint8Array(binaryString.length);
         for (let i = 0; i < binaryString.length; i++) {
@@ -177,55 +195,46 @@ export default function KrsUploadPage() {
 
       const mergedPdfBytes = await mergedPdf.save();
 
-      // Trigger Download PDF Gabungan
       const blob = new Blob([mergedPdfBytes.buffer as ArrayBuffer], {
         type: 'application/pdf',
       });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = `GABUNGAN_KRS_MAHASISWA_${new Date().toISOString().slice(0, 10)}.pdf`;
+      const titlePrefix =
+        filterType === 'ALL' ? 'GABUNGAN_DOKUMEN' : `GABUNGAN_${filterType}`;
+      link.download = `${titlePrefix}_MAHASISWA_${new Date().toISOString().slice(0, 10)}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Merge error:', err);
-      alert('❌ Gagal menggabungkan PDF. Terjadi masalah pengambil data dari Drive!');
+      alert(`❌ ${err.message || 'Gagal menggabungkan PDF.'}`);
     } finally {
       setLoadingMerge(false);
     }
   };
-
-  // Filter Data untuk Tabel
-  const filteredKrs = krsList.filter(
-    (item) =>
-      item.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.nim.includes(searchTerm) ||
-      item.fileName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const sortedKrs = [...filteredKrs].reverse();
 
   return (
     <div className="max-w-4xl mx-auto px-6 pt-28 pb-16 space-y-12">
       {/* Header Banner */}
       <div className="text-center space-y-4">
         <span className="text-xs font-mono tracking-wider uppercase px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
-          Portal Dokumen Mahasiswa
+          Portal Dokumen Akademik
         </span>
 
         <h1 className="text-3xl md:text-4xl font-bold">
-          Pengumpulan KRS Mahasiswa
+          Pengumpulan KRS & KHS Mahasiswa
         </h1>
 
         <p className="text-sm text-muted-foreground max-w-md mx-auto">
-          Upload file Kartu Riwayat Studi (KRS) lo dalam format PDF (Maks. 500 KB).
+          Upload file KRS / KHS lo dalam format PDF (Maks. 500 KB).
         </p>
       </div>
 
-      {/* Form Upload KRS */}
+      {/* Form Upload */}
       <div className="p-6 md:p-8 rounded-2xl bg-card border border-border shadow-sm space-y-6">
         <h2 className="text-xl font-bold border-l-4 border-primary pl-3">
-          Form Upload KRS
+          Form Upload Dokumen
         </h2>
 
         {feedback.msg && (
@@ -241,7 +250,24 @@ export default function KrsUploadPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid sm:grid-cols-2 gap-4">
+          <div className="grid sm:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-muted-foreground uppercase">
+                Jenis Dokumen
+              </label>
+              <select
+                value={jenisDokumen}
+                onChange={(e) =>
+                  setJenisDokumen(e.target.value as 'KRS' | 'KHS')
+                }
+                className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-sm focus:outline-none focus:border-primary cursor-pointer font-semibold"
+                disabled={loadingUpload}
+              >
+                <option value="KRS">📄 KRS (Kartu Riwayat Studi)</option>
+                <option value="KHS">📜 KHS (Kartu Hasil Studi)</option>
+              </select>
+            </div>
+
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground uppercase">
                 NIM Mahasiswa
@@ -275,7 +301,7 @@ export default function KrsUploadPage() {
 
           <div className="space-y-2">
             <label className="text-xs font-medium text-muted-foreground uppercase">
-              File KRS (PDF Only, Maks. 500 KB)
+              File Dokumen (PDF Only, Maks. 500 KB)
             </label>
             <input
               type="file"
@@ -289,7 +315,7 @@ export default function KrsUploadPage() {
               <p className="text-[11px] text-emerald-500 font-mono mt-1">
                 📄 File terpilih: {selectedFile.name} (
                 {(selectedFile.size / 1024).toFixed(1)} KB) ➔ Format otomatis:
-                KRS_{nama || 'Nama'}_{nim || 'NIM'}.pdf
+                {jenisDokumen}_{nama || 'Nama'}_{nim || 'NIM'}.pdf
               </p>
             )}
           </div>
@@ -299,7 +325,9 @@ export default function KrsUploadPage() {
             disabled={loadingUpload}
             className="w-full py-3 bg-primary text-primary-foreground font-semibold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed mt-4 flex items-center justify-center gap-2"
           >
-            {loadingUpload ? 'Uploading File ke Google Drive...' : '🚀 Upload KRS Sekarang'}
+            {loadingUpload
+              ? 'Uploading File ke Google Drive...'
+              : `Upload ${jenisDokumen} Sekarang`}
           </button>
         </form>
       </div>
@@ -309,16 +337,14 @@ export default function KrsUploadPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
           <div>
             <h2 className="text-xl font-bold border-l-4 border-amber-500 pl-3">
-              Daftar Pengumpulan KRS
+              Daftar Pengumpulan Dokumen
             </h2>
             <p className="text-xs text-muted-foreground mt-1">
-              Data mahasiswa yang telah mengunggah KRS secara real-time.
+              Data KRS & KHS mahasiswa yang telah terunggah secara real-time.
             </p>
           </div>
 
-          {/* Action Header Buttons */}
           <div className="flex items-center gap-2">
-            {/* Tombol Refresh Data */}
             <button
               type="button"
               onClick={fetchKrsList}
@@ -329,60 +355,98 @@ export default function KrsUploadPage() {
               🔄 {loadingRekap ? '...' : 'Refresh'}
             </button>
 
-            {/* Tombol Merge & Download Semua PDF */}
             <button
               type="button"
               onClick={handleMergeAllPdf}
-              disabled={loadingMerge || krsList.length === 0}
+              disabled={loadingMerge || sortedKrs.length === 0}
               className="px-4 py-2.5 text-xs font-semibold bg-emerald-500 text-black hover:bg-emerald-400 border border-emerald-500/30 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {loadingMerge
-                ? '⏳ Menggabungkan PDF...'
-                : `⚡ Download & Merge All (${krsList.length} File)`}
+                ? '⏳ Menggabungkan...'
+                : `⚡ Download & Merge (${sortedKrs.length} File)`}
             </button>
           </div>
         </div>
 
-        {/* Input Cari */}
-        <div className="max-w-md">
-          <input
-            type="text"
-            placeholder="🔍 Cari berdasarkan Nama, NIM, atau Nama File..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-3.5 py-2 bg-background border border-border rounded-xl text-xs focus:outline-none focus:border-primary"
-          />
+        {/* Filter Tab & Input Cari */}
+        <div className="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center">
+          <div className="flex items-center gap-1.5 p-1 bg-muted/40 border border-border rounded-xl">
+            <button
+              type="button"
+              onClick={() => setFilterType('ALL')}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                filterType === 'ALL'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Semua ({krsList.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterType('KRS')}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                filterType === 'KRS'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              KRS ({krsList.filter((i) => i.jenisDokumen === 'KRS').length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterType('KHS')}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                filterType === 'KHS'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              KHS ({krsList.filter((i) => i.jenisDokumen === 'KHS').length})
+            </button>
+          </div>
+
+          <div className="max-w-xs">
+            <input
+              type="text"
+              placeholder="🔍 Cari Nama, NIM, atau File..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-3.5 py-2 bg-background border border-border rounded-xl text-xs focus:outline-none focus:border-primary"
+            />
+          </div>
         </div>
 
-        {/* Table Rekap dengan Sticky Header & Scrollbar Maksimal */}
-        <div className="overflow-x-auto overflow-y-auto max-h-[500px] border border-border rounded-xl custom-scrollbar">
+        {/* Table Rekap */}
+        <div className="overflow-x-auto overflow-y-auto max-h-[500px] border border-border rounded-xl">
           <table className="w-full text-left text-xs relative">
             <thead className="bg-muted/90 backdrop-blur border-b border-border text-muted-foreground uppercase font-mono sticky top-0 z-10">
               <tr>
                 <th className="p-3">Waktu</th>
                 <th className="p-3">NIM</th>
                 <th className="p-3">Nama Mahasiswa</th>
+                <th className="p-3">Jenis</th>
                 <th className="p-3">Nama File Format</th>
-                <th className="p-3 text-center">Aksi File</th>
+                <th className="p-3 text-center">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {loadingRekap ? (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="p-4 text-center text-muted-foreground italic"
                   >
-                    Memuat data KRS...
+                    Memuat data...
                   </td>
                 </tr>
               ) : sortedKrs.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="p-4 text-center text-muted-foreground italic"
                   >
-                    Belum ada data pengumpulan KRS.
+                    Belum ada data pengumpulan.
                   </td>
                 </tr>
               ) : (
@@ -397,6 +461,17 @@ export default function KrsUploadPage() {
                     <td className="p-3 font-mono font-semibold">{item.nim}</td>
                     <td className="p-3 font-medium text-foreground">
                       {item.nama}
+                    </td>
+                    <td className="p-3">
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          item.jenisDokumen === 'KHS'
+                            ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
+                            : 'bg-blue-500/10 text-blue-500 border border-blue-500/20'
+                        }`}
+                      >
+                        {item.jenisDokumen}
+                      </span>
                     </td>
                     <td className="p-3 font-mono text-muted-foreground">
                       {item.fileName}
