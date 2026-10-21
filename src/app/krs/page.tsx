@@ -159,7 +159,10 @@ export default function KrsUploadPage() {
 
   const sortedKrs = [...filteredKrs].reverse();
 
-  // Merge Semua PDF Sesuai Filter Terpilih
+  // Helper Delay untuk Mencegah Rate Limit Apps Script
+  const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  // Merge PDF via Apps Script Proxy dengan Safe Request & Delay
   const handleMergeAllPdf = async () => {
     if (sortedKrs.length === 0) {
       return alert('Belum ada file yang diupload untuk digabungkan!');
@@ -169,20 +172,37 @@ export default function KrsUploadPage() {
     try {
       const mergedPdf = await PDFDocument.create();
 
-      for (const item of sortedKrs) {
+      for (let i = 0; i < sortedKrs.length; i++) {
+        const item = sortedKrs[i];
+
+        // Jeda 300ms antar file agar Apps Script tidak kena Limit/Timeout di HP
+        if (i > 0) await delay(300);
+
         const res = await fetch(
           `${APPS_SCRIPT_KRS_URL}?action=getFile&fileId=${item.fileId}`
         );
-        const json = await res.json();
 
-        if (!json.success || !json.base64) {
-          throw new Error(`Gagal mengambil file ${item.fileName}`);
+        // Cek jika response bukan JSON / Error dari Google
+        const textRes = await res.text();
+        let json;
+        try {
+          json = JSON.parse(textRes);
+        } catch (e) {
+          console.error(`Error parsing file ${item.fileName}:`, textRes);
+          throw new Error(
+            `Gagal mengambil file ${item.fileName}. Batas request Google tercapai, coba lagi dalam beberapa detik.`
+          );
         }
 
+        if (!json.success || !json.base64) {
+          throw new Error(json.message || `Gagal mengambil file ${item.fileName}`);
+        }
+
+        // Decode Base64 ke Uint8Array
         const binaryString = atob(json.base64);
         const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
+        for (let j = 0; j < binaryString.length; j++) {
+          bytes[j] = binaryString.charCodeAt(j);
         }
 
         const pdf = await PDFDocument.load(bytes.buffer);
@@ -200,9 +220,11 @@ export default function KrsUploadPage() {
       });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
+
       const titlePrefix =
         filterType === 'ALL' ? 'GABUNGAN_DOKUMEN' : `GABUNGAN_${filterType}`;
       link.download = `${titlePrefix}_MAHASISWA_${new Date().toISOString().slice(0, 10)}.pdf`;
+
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
