@@ -59,13 +59,23 @@ export default function KrsUploadPage() {
       return;
     }
 
-    if (file.type !== 'application/pdf') {
+    // 1. Check file size 0 KB / Corrupt
+    if (file.size === 0) {
+      alert('❌ File yang dipilih kosong atau rusak (0 KB)! Silakan pilih file PDF yang valid.');
+      e.target.value = '';
+      setSelectedFile(null);
+      return;
+    }
+
+    // 2. Check MIME Type & Extension
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
       alert('❌ Format file harus berupa PDF!');
       e.target.value = '';
       setSelectedFile(null);
       return;
     }
 
+    // 3. Max size check (500 KB)
     const MAX_SIZE = 500 * 1024;
     if (file.size > MAX_SIZE) {
       alert('❌ Ukuran file terlalu besar! Maksimal ukuran file adalah 500 KB.');
@@ -77,11 +87,17 @@ export default function KrsUploadPage() {
     setSelectedFile(file);
   };
 
+  // Conversion to Clean Base64 String
   const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
+      reader.onload = () => {
+        const result = reader.result as string;
+        // Hanya ambil data base64 setelah koma
+        const base64Data = result.includes(',') ? result.split(',')[1] : result;
+        resolve(base64Data);
+      };
       reader.onerror = (error) => reject(error);
     });
   };
@@ -97,8 +113,14 @@ export default function KrsUploadPage() {
     setFeedback({ type: '', msg: '' });
 
     try {
-      const cleanNama = nama.trim().replace(/[/\\?%*:|"<>]/g, '');
-      const cleanNim = nim.trim();
+      // 💡 Clean/sanitize Nama & NIM dari karakter khusus, kurung, dan titik ganda
+      const cleanNama = nama
+        .trim()
+        .replace(/[/\\?%*:|"<>()[\]]/g, '') // Hapus karakter khusus & tanda kurung
+        .replace(/\s+/g, ' '); // Normalkan spasi ganda
+
+      const cleanNim = nim.trim().replace(/[^0-9]/g, ''); // Hanya simpan angka NIM
+
       const customFileName = `${jenisDokumen}_${cleanNama}_${cleanNim}.pdf`;
 
       const base64Data = await fileToBase64(selectedFile);
