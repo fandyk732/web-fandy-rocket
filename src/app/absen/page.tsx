@@ -202,7 +202,7 @@ export default function AbsensiPage() {
         <div className="max-w-md mx-auto w-full flex flex-col gap-2.5 pt-2">
           {/* 🎥 Banner Google Meet Perkuliahan */}
           <a
-            href="https://meet.google.com/dwi-bweq-gqw"
+            href="https://meet.google.com/ucf-ktvi-nnx"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-transparent border border-emerald-500/30 hover:border-emerald-500/60 transition-all group shadow-sm"
@@ -216,7 +216,7 @@ export default function AbsensiPage() {
                   Link Perkuliahan Online (Google Meet)
                 </p>
                 <p className="text-[11px] font-mono text-muted-foreground">
-                  meet.google.com/dwi-bweq-gqw
+                  meet.google.com/ucf-ktvi-nnx
                 </p>
               </div>
             </div>
