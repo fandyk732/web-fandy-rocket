@@ -179,7 +179,7 @@ export default function KrsUploadPage() {
     return matchesSearch && matchesType;
   });
 
-  const sortedKrs = [...filteredKrs].reverse();
+  const sortedKrs = filteredKrs.toReversed();
 
   // Helper Delay untuk Mencegah Rate Limit Apps Script
   const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

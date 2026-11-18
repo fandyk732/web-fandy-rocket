@@ -85,7 +85,7 @@ export default function TableOfContents({
            * terdekat dengan bagian atas viewport.
            */
           const sorted =
-            [...visibleEntries].sort(
+            visibleEntries.toSorted(
               (a, b) =>
                 a.boundingClientRect.top -
                 b.boundingClientRect.top

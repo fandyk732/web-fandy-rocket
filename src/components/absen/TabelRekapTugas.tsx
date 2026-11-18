@@ -79,7 +79,7 @@ export default function TabelRekapTugas({ tugasList, loading, onRefresh }: Tabel
             ) : filtered.length === 0 ? (
               <tr><td colSpan={6} className="p-4 text-center italic text-muted-foreground">Belum ada tugas diunggah.</td></tr>
             ) : (
-              [...filtered].reverse().map((item, idx) => (
+              filtered.toReversed().map((item, idx) => (
                 <tr key={idx} className="hover:bg-muted/20 transition-colors">
                   <td className="p-3 font-mono text-muted-foreground">{item.timestamp}</td>
                   <td className="p-3 font-semibold text-primary">{item.kelompok}</td>

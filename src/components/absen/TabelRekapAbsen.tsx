@@ -53,7 +53,7 @@ export default function TabelRekapAbsen({
     return matchesSearch && matchesDate && matchesStatus;
   });
 
-  const sortedFilteredData = [...allFilteredData].reverse();
+  const sortedFilteredData = allFilteredData.toReversed();
   const displayRekap = sortedFilteredData.slice(0, 50);
 
   const handleDownloadCSV = () => {

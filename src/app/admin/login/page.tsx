@@ -46,6 +46,7 @@ export default function AdminLoginPage() {
         <form onSubmit={handleLogin} className="space-y-4">
           <input
             type="password"
+            autoComplete="current-password"
             placeholder="Password Admin"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
